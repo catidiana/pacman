@@ -1,6 +1,6 @@
 struct V2
 {
-   int32_t x, y;
+   uint32_t x, y;
 };
 
 struct V3 {

@@ -182,8 +182,8 @@ public:
             awailable_ceils[1] = WalkingMatr[matr_ceil.y][(matr_ceil.x-1)%28];
             awailable_ceils[2] = WalkingMatr[matr_ceil.y + 1][matr_ceil.x];
             awailable_ceils[3] = WalkingMatr[matr_ceil.y][(matr_ceil.x+1)%28];
-            int x_dir = matr_ceil.x - matr_target.x;
-            int y_dir = matr_ceil.y - matr_target.y;
+            int x_dir = (int)matr_ceil.x - (int)matr_target.x;
+            int y_dir = (int)matr_ceil.y - (int)matr_target.y;
             target_distance[0] = x_dir*x_dir + (y_dir - 1)*(y_dir - 1);
             target_distance[1] = (x_dir - 1)*(x_dir - 1) + y_dir*y_dir;
             target_distance[2] = x_dir*x_dir +(y_dir + 1)*(y_dir + 1);
@@ -353,7 +353,7 @@ public:
         define_matr_ceil();
     }
     void hunt (pacman PacMan) override {
-        if (abs(PacMan.matr_ceil.x - matr_ceil.x) > 8 && abs(PacMan.matr_ceil.y - matr_ceil.y) > 8) walk_to_target(walk_target_ceil);
+        if (abs((int)PacMan.matr_ceil.x - (int)matr_ceil.x) > 8 && abs((int)PacMan.matr_ceil.y - (int)matr_ceil.y) > 8) walk_to_target(walk_target_ceil);
         else walk_to_target(PacMan.matr_ceil);
     }
     void action (Image GameWindow, uint32_t s, pacman PacMan, food Food) override {
