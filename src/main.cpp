@@ -61,7 +61,7 @@ main (int argc, char **argv)
     Image level = load_image("res/level.png");
     Image high_score = load_image("res/high_score.png");
     Image digits[10];
-    char t[9];
+    char t[11];
     strcpy(t,"res/0.png");
 for (int i = 0; i < 10; i++) {
     *(t+4) = '0' +i;
