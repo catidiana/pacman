@@ -24,9 +24,9 @@ public:
 
 
     pacman() {
-        pac_coord = {290, 190};
+        pac_coord = {280, 190};
         define_matr_ceil();
-        state = PAC_STAY;
+        state = PAC_WALK_LEFT;
         awaiting_state = PAC_NONE;
         pacman_stay        = load_image("res/pacman.png");
         pacman_go_left[0]  = load_image("res/pacman_45_left.png");
@@ -50,25 +50,25 @@ public:
         state = PAC_STAY;
     }
     void walk_to_left(Image GameWindow, uint32_t s) {
-        --pac_coord.x;
-        if (pac_coord.x == 0) pac_coord.x = MAIN_WINDOW_INIT_WIDTH - 1;
+        pac_coord.x -=2;
+        if (pac_coord.x == 0) pac_coord.x = MAIN_WINDOW_INIT_WIDTH - 2;
         draw_image(GameWindow, pacman_go_left[(s%8)/4], pac_coord.x, pac_coord.y);
     }
     void walk_to_right(Image GameWindow, uint32_t s) {
-        ++pac_coord.x;
+        pac_coord.x +=2;
         if (pac_coord.x == MAIN_WINDOW_INIT_WIDTH) pac_coord.x = 0;
         draw_image(GameWindow, pacman_go_right[(s%8)/4], pac_coord.x, pac_coord.y);
     }
     void walk_to_down(Image GameWindow, uint32_t s) {
-        --pac_coord.y;
+        pac_coord.y -=2;
         draw_image(GameWindow, pacman_go_down[(s%8)/4], pac_coord.x, pac_coord.y);
     }
     void walk_to_up(Image GameWindow, uint32_t s) {
-        ++pac_coord.y;
+        pac_coord.y +=2;
         draw_image(GameWindow, pacman_go_up[(s%8)/4], pac_coord.x, pac_coord.y);
     }
     void death() {}
-    void action (Image GameWindow, uint s) {
+    void action (Image GameWindow, uint32_t s) {
         switch (awaiting_state) {
         case PAC_NONE: break;
         case PAC_WALK_LEFT: {

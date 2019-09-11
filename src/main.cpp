@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
-#include <time.h>
 
 
 
@@ -24,6 +23,7 @@ enum InputType {
 };
 
 uint32_t GAME_SCORE = 0;
+uint32_t LEVEL = 1;
 
 #include "window_setup.cpp"
 #include "walking_rules.cpp"
@@ -58,6 +58,16 @@ main (int argc, char **argv)
     printf("success.\nLoad images... ");
 
     Image background = load_image("res/background.png");
+    Image level = load_image("res/level.png");
+    Image high_score = load_image("res/high_score.png");
+    Image digits[10];
+    char t[9];
+    strcpy(t,"res/0.png");
+for (int i = 0; i < 10; i++) {
+    *(t+4) = '0' +i;
+    digits[i] = load_image(t);
+}
+
     pacman PacMan;
     food Food;
     ghost_red Oikake;
@@ -68,6 +78,7 @@ main (int argc, char **argv)
     printf("success.\nStart the main loop.\n ");
     for (int keep_running = 1; keep_running; )
     {
+        uint32_t start_loop = SDL_GetTicks();
         static uint32_t s = 0;
 
         InputType input = INPUT_NONE;
@@ -76,7 +87,7 @@ main (int argc, char **argv)
         {
             switch (event.type)
             {
-            case SDL_WINDOWEVENT: //FIX THIS ISSUE
+            case SDL_WINDOWEVENT:
             {
                 switch (event.window.event)
                 {
@@ -124,15 +135,26 @@ main (int argc, char **argv)
         glClear (GL_COLOR_BUFFER_BIT);
 
         //what happens here
-        draw_image(GameWindow, background, window_w/2, window_h/2);
+        draw_image(GameWindow, background, MAIN_WINDOW_INIT_WIDTH/2, MAIN_WINDOW_INIT_HEIGHT/2);
+        draw_image(GameWindow, level, 40, 700);
+        draw_integer (GameWindow, digits, 100, 700, LEVEL);
+        draw_integer (GameWindow, digits, 100, 680, GAME_SCORE);
+        draw_image(GameWindow, high_score, 490, 700);
+
         Food.draw_food(GameWindow, s);
         PacMan.action(GameWindow, s);
         Food.eaten_food(PacMan);
-        Oikake.action(GameWindow, s, PacMan, Food);
-        Machibuse.action(GameWindow, s, PacMan, Food);
-        Otoboke.action(GameWindow, s, PacMan, Food);
+       if (Food.energizer_mode == 1 && LEVEL < 5) {
+            Oikake.awaiting_state = GHOST_FRIGHTENED;
+            Machibuse.awaiting_state = GHOST_FRIGHTENED;
+            Otoboke.awaiting_state = GHOST_FRIGHTENED;
+            Kimagure.awaiting_state = GHOST_FRIGHTENED;
+        }
+        Oikake.action(GameWindow, s, PacMan);
+        Machibuse.action(GameWindow, s, PacMan);
+        Otoboke.action(GameWindow, s, PacMan);
         Kimagure.update_dependent(Oikake.matr_ceil);
-        Kimagure.action(GameWindow, s, PacMan, Food);
+        Kimagure.action(GameWindow, s, PacMan);
 
 
         ++s;
@@ -141,6 +163,8 @@ main (int argc, char **argv)
 
 
         SDL_GL_SwapWindow (main_window);
+        uint32_t finish_loop = SDL_GetTicks();
+        if (finish_loop < start_loop + 25) SDL_Delay(25 + start_loop - finish_loop);
     }
 
     return 0;

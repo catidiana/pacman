@@ -141,6 +141,22 @@ draw_image (Image image_des, Image image_src, uint32_t x_center, uint32_t y_cent
 
 
 static void
+draw_integer (Image image_des, Image *image_digits, uint32_t x_right_corner, uint32_t y_center, uint32_t number)
+{
+    if (number == 0)     draw_image (image_des, image_digits[0], x_right_corner - 7, y_center);
+    uint32_t i = 0;
+        while (number>0)
+        {
+            uint32_t digit = number%10;
+            number = number/10;
+            //integer pic size is 14*20
+            draw_image (image_des, image_digits[digit], x_right_corner - 7 - i, y_center);
+            i += 14;
+        }
+}
+
+
+static void
 uniform_fill (Image image, V3 color)
 {
 
@@ -149,5 +165,3 @@ uniform_fill (Image image, V3 color)
         image.pixels[i] = color;
     }
 }
-
-

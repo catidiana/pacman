@@ -29,6 +29,7 @@ protected:
     Image ghost_fright[4];
     int shy_time;
     uint32_t start_time;
+    uint32_t scared_time;
     V2 walk_target_ceil;
 
 public:
@@ -63,67 +64,68 @@ public:
         ghost_fright[2]  = load_image("res/ghost_fr_3.png");
         ghost_fright[3]  = load_image("res/ghost_fr_4.png");
         start_time = SDL_GetTicks();
+        scared_time = SDL_GetTicks();
     }
     void define_matr_ceil() {
         matr_ceil.x = (gh_coord.x/10)/2;
         matr_ceil.y = ((MAIN_WINDOW_INIT_HEIGHT - gh_coord.y)/10)/2;
     }
     void shy_mode (uint32_t s) {
-        if (s%40 < 20) {
-            gh_coord.x--;
+        if (s%20 < 10) {
+            gh_coord.x -= 2;
             direction = DIR_LEFT;
-        } else { gh_coord.x++;
+        } else { gh_coord.x += 2;
             direction = DIR_RIGHT;
         }
     }
     void transfer_mode () {
         if (gh_coord.x != 290) {
             if (gh_coord.x < 290) {
-                gh_coord.x++;
+                gh_coord.x +=2;
                 direction = DIR_RIGHT;
             } else {
-                gh_coord.x--;
+                gh_coord.x-=2;
                 direction = DIR_LEFT;
             }
         }
         else if (gh_coord.y != 430) {
             if (gh_coord.y < 430) {
-                gh_coord.y++;
+                gh_coord.y+= 2;
                 direction = DIR_UP;
             } else {
-                gh_coord.y--;
+                gh_coord.y-= 2;
                 direction = DIR_DOWN;
             }
         }
     }
-    void walk_to_left() {
-        --gh_coord.x;
-        if (gh_coord.x == 0) gh_coord.x = MAIN_WINDOW_INIT_WIDTH - 1;
+    void walk_to_left(uint8_t speed = 2) {
+        gh_coord.x -= speed;
+        if (gh_coord.x == 0) gh_coord.x = MAIN_WINDOW_INIT_WIDTH - 2;
         direction = DIR_LEFT;
     }
-    void walk_to_right() {
-        ++gh_coord.x;
+    void walk_to_right(uint8_t speed = 2) {
+        gh_coord.x += speed;
         if (gh_coord.x == MAIN_WINDOW_INIT_WIDTH) gh_coord.x = 0;
         direction = DIR_RIGHT;
     }
-    void walk_to_down() {
-        --gh_coord.y;
+    void walk_to_down(uint8_t speed = 2) {
+        gh_coord.y -= speed;
         direction = DIR_DOWN;
     }
-    void walk_to_up() {
-        ++gh_coord.y;
+    void walk_to_up(uint8_t speed = 2) {
+        gh_coord.y += speed;
         direction = DIR_UP;
     }
-    void continue_walk () {
+    void continue_walk (uint8_t speed = 2) {
         switch (direction) {
-        case DIR_UP: walk_to_up();
+        case DIR_UP: walk_to_up(speed);
             break;
-        case DIR_LEFT: walk_to_left();
+        case DIR_LEFT: walk_to_left(speed);
             break;
-        case DIR_DOWN: walk_to_down();
+        case DIR_DOWN: walk_to_down(speed);
             break;
 
-        case DIR_RIGHT: walk_to_right();
+        case DIR_RIGHT: walk_to_right(speed);
             break;
         }
     }
@@ -140,40 +142,40 @@ public:
         if (WalkingMatr[matr_ceil.y][(matr_ceil.x-1)%28] > 0 && PacMan.matr_ceil.x < matr_ceil.x)return DIR_RIGHT;
         return find_awailable_direction();
     }
-    void walk_to_target(V2 matr_target) {
+    void walk_to_target(V2 matr_target, uint8_t speed = 2) {
         if (gh_coord.x%20 != 10 || gh_coord.y%20 != 10) {
-            continue_walk();
+            continue_walk(speed);
             return;
         }
         if (WalkingMatr[matr_ceil.y][matr_ceil.x] == 1) {
             switch (direction) {
             case DIR_UP: {
                 if (WalkingMatr[matr_ceil.y - 1][matr_ceil.x] > 0) {
-                    continue_walk();
+                    continue_walk(speed);
                     return;
                 }
             } break;
             case DIR_LEFT: {
                 if (WalkingMatr[matr_ceil.y][(matr_ceil.x-1)%28] > 0) {
-                    continue_walk();
+                    continue_walk(speed);
                     return;
                 }
             } break;
             case DIR_DOWN: {
                 if (WalkingMatr[matr_ceil.y + 1][matr_ceil.x] > 0) {
-                    continue_walk();
+                    continue_walk(speed);
                     return;
                 }
             } break;
             case DIR_RIGHT: {
                 if (WalkingMatr[matr_ceil.y][(matr_ceil.x+1)%28] > 0) {
-                    continue_walk();
+                    continue_walk(speed);
                     return;
                 }
             } break;
             }
             direction = find_awailable_direction();
-            continue_walk();
+            continue_walk(speed);
         } else {
             bool awailable_ceils[4];
             int target_distance[4];
@@ -210,15 +212,15 @@ public:
             default: direction = DIR_RIGHT;
                 break;
             }
-            continue_walk();
+            continue_walk(speed);
         }
     }
     virtual void hunt (pacman PacMan) {
         walk_to_target(PacMan.matr_ceil);
     }
-    void calculating_path(uint32_t s, pacman PacMan, food Food) {
-        if (Food.energizer_mode > 0) {}
+    void calculating_path(Image GameWindow, uint32_t s, pacman PacMan) {
         switch (awaiting_state) {
+
         case GHOST_SHY:
             break;
         case GHOST_TRANSFER: {
@@ -228,6 +230,7 @@ public:
                 awaiting_state = GHOST_WALK;
             }
         } break;
+
         case GHOST_WALK: {
             if (state == GHOST_HUNT) {
                 uint32_t current_time = SDL_GetTicks();
@@ -242,8 +245,18 @@ public:
                 awaiting_state = GHOST_HUNT;
                 start_time = SDL_GetTicks();
             }
+            else if (state == GHOST_FRIGHTENED) {
+                uint32_t current_time = SDL_GetTicks();
+                if (current_time >= scared_time + 9000 && gh_coord.x%20 == 10 && gh_coord.y%20 == 10) {
+                    state = GHOST_WALK;
+                    awaiting_state = GHOST_HUNT;
+                    start_time -= 9000;
+                }
+            }
         } break;
+
         case GHOST_HUNT: {
+            if (state == GHOST_WALK) {
             uint32_t current_time = SDL_GetTicks();
             if (current_time >= start_time + walking_time[wave] && gh_coord.x%20 == 10 && gh_coord.y%20 == 10) {
                 state = GHOST_HUNT;
@@ -251,6 +264,25 @@ public:
                 else awaiting_state = GHOST_NONE;
                 direction = find_direction_to_pacman(PacMan);
                 start_time = SDL_GetTicks();
+            }
+            } else if (state == GHOST_FRIGHTENED) {
+                uint32_t current_time = SDL_GetTicks();
+                if (current_time >= scared_time + 9000 && gh_coord.x%20 == 10 && gh_coord.y%20 == 10) {
+                    state = GHOST_HUNT;
+                    awaiting_state = GHOST_WALK;
+                    start_time -= 9000;
+                }
+            }
+        } break;
+
+        case GHOST_FRIGHTENED: {
+            if (state!= GHOST_FRIGHTENED) {
+            awaiting_state = state;
+            state = GHOST_FRIGHTENED;
+            scared_time = SDL_GetTicks();
+            } else {
+                awaiting_state = GHOST_WALK;
+                scared_time = SDL_GetTicks();
             }
         } break;
         default:
@@ -264,12 +296,19 @@ public:
         case GHOST_WALK: walk_to_target(walk_target_ceil);
             break;
         case GHOST_HUNT: hunt(PacMan);
+            break;
+        case GHOST_FRIGHTENED: {
+            walk_to_target({35 - PacMan.matr_ceil.y, 27 - PacMan.matr_ceil.x}, 1);
+            uint32_t current_time = SDL_GetTicks();
+            if (current_time < scared_time + 7000) draw_image(GameWindow, ghost_fright[(s%8)/4], gh_coord.x, gh_coord.y);
+            else draw_image(GameWindow, ghost_fright[(s%16)/4], gh_coord.x, gh_coord.y);
+        } break;
         default:
             break;
         }
         define_matr_ceil();
     }
-    virtual void action(Image GameWindow, uint32_t s, pacman PacMan, food Food) = 0;
+    virtual void action(Image GameWindow, uint32_t s, pacman PacMan) = 0;
 };
 
 class ghost_red : public ghost
@@ -286,13 +325,14 @@ public:
         ghost_red_mask[2][1]  = load_image("res/ghost_red_down_2.png");
         ghost_red_mask[3][0]  = load_image("res/ghost_red_right_1.png");
         ghost_red_mask[3][1]  = load_image("res/ghost_red_right_2.png");
-        gh_coord = {290, 430};
+        gh_coord = {280, 430};
         define_matr_ceil();
 
     }
-    void action (Image GameWindow, uint32_t s, pacman PacMan, food Food) override {
-        calculating_path(s, PacMan, Food);
-        draw_image(GameWindow, ghost_red_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
+    void action (Image GameWindow, uint32_t s, pacman PacMan) override {
+        calculating_path(GameWindow, s, PacMan);
+        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN)
+            draw_image(GameWindow, ghost_red_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
     }
 };
 
@@ -328,9 +368,10 @@ public:
             break;
         }
     }
-    void action (Image GameWindow, uint32_t s, pacman PacMan, food Food) override {
-        calculating_path(s, PacMan, Food);
-        draw_image(GameWindow, ghost_pink_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
+    void action (Image GameWindow, uint32_t s, pacman PacMan) override {
+        calculating_path(GameWindow, s, PacMan);
+        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN)
+            draw_image(GameWindow, ghost_pink_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
     }
 };
 
@@ -356,9 +397,10 @@ public:
         if (abs((int)PacMan.matr_ceil.x - (int)matr_ceil.x) > 8 && abs((int)PacMan.matr_ceil.y - (int)matr_ceil.y) > 8) walk_to_target(walk_target_ceil);
         else walk_to_target(PacMan.matr_ceil);
     }
-    void action (Image GameWindow, uint32_t s, pacman PacMan, food Food) override {
-        calculating_path(s, PacMan, Food);
-        draw_image(GameWindow, ghost_orange_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
+    void action (Image GameWindow, uint32_t s, pacman PacMan) override {
+        calculating_path(GameWindow, s, PacMan);
+        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN)
+            draw_image(GameWindow, ghost_orange_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
     }
 };
 
@@ -399,8 +441,9 @@ public:
         dependent.x = new_dep.x;
         dependent.y = new_dep.y;
     }
-    void action (Image GameWindow, uint32_t s, pacman PacMan, food Food) override {
-        calculating_path(s, PacMan, Food);
-        draw_image(GameWindow, ghost_cyan_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
+    void action (Image GameWindow, uint32_t s, pacman PacMan) override {
+        calculating_path(GameWindow, s, PacMan);
+        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN)
+            draw_image(GameWindow, ghost_cyan_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
     }
 };
