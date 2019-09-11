@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
+#include <time.h>
 
 
 
@@ -61,12 +62,12 @@ main (int argc, char **argv)
     Image level = load_image("res/level.png");
     Image high_score = load_image("res/high_score.png");
     Image digits[10];
-    char t[11];
+    char t[10];
     strcpy(t,"res/0.png");
-for (int i = 0; i < 10; i++) {
-    *(t+4) = '0' +i;
-    digits[i] = load_image(t);
-}
+    for (int i = 0; i < 10; i++) {
+        *(t+4) = '0' +i;
+        digits[i] = load_image(t);
+    }
 
     pacman PacMan;
     food Food;
@@ -76,6 +77,7 @@ for (int i = 0; i < 10; i++) {
     ghost_cyan Kimagure;
 
     printf("success.\nStart the main loop.\n ");
+
     for (int keep_running = 1; keep_running; )
     {
         uint32_t start_loop = SDL_GetTicks();
@@ -143,18 +145,19 @@ for (int i = 0; i < 10; i++) {
 
         Food.draw_food(GameWindow, s);
         PacMan.action(GameWindow, s);
-        Food.eaten_food(PacMan);
-       if (Food.energizer_mode == 1 && LEVEL < 5) {
+        Food.eaten_food(PacMan, GameWindow, digits);
+        if (Food.energizer_mode == 1 && LEVEL < 5) {
+            dead_bonus_count = 0;
             Oikake.awaiting_state = GHOST_FRIGHTENED;
             Machibuse.awaiting_state = GHOST_FRIGHTENED;
             Otoboke.awaiting_state = GHOST_FRIGHTENED;
             Kimagure.awaiting_state = GHOST_FRIGHTENED;
         }
-        Oikake.action(GameWindow, s, PacMan);
-        Machibuse.action(GameWindow, s, PacMan);
-        Otoboke.action(GameWindow, s, PacMan);
+        Oikake.action(GameWindow, digits, s, PacMan);
+        Machibuse.action(GameWindow, digits, s, PacMan);
+        Otoboke.action(GameWindow, digits, s, PacMan);
         Kimagure.update_dependent(Oikake.matr_ceil);
-        Kimagure.action(GameWindow, s, PacMan);
+        Kimagure.action(GameWindow, digits, s, PacMan);
 
 
         ++s;
@@ -164,7 +167,7 @@ for (int i = 0; i < 10; i++) {
 
         SDL_GL_SwapWindow (main_window);
         uint32_t finish_loop = SDL_GetTicks();
-        if (finish_loop < start_loop + 25) SDL_Delay(25 + start_loop - finish_loop);
+        if (finish_loop < start_loop + 22) SDL_Delay(22 + start_loop - finish_loop);
     }
 
     return 0;

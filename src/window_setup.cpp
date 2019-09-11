@@ -155,6 +155,12 @@ draw_integer (Image image_des, Image *image_digits, uint32_t x_right_corner, uin
         }
 }
 
+static void
+draw_bonus (Image image_des, Image bonus, Image *image_digits, uint32_t number) {
+draw_image (image_des, bonus, 520, 20);
+draw_integer (image_des, image_digits, 480, 20, number);
+}
+
 
 static void
 uniform_fill (Image image, V3 color)
