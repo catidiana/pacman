@@ -55,7 +55,7 @@ public:
         if (energizers[1]) draw_image(GameWindow, energizer[(s%16)/8], 30, 590);
         if (energizers[2]) draw_image(GameWindow, energizer[(s%16)/8], 530, 190);
         if (energizers[3]) draw_image(GameWindow, energizer[(s%16)/8], 530, 590);
-        if (food_counter == 160 || food_counter == 60) {
+        if ((food_counter == 160 || food_counter == 60) && fruits == false) {
             fruits = true;
             fruit_time = SDL_GetTicks();
         }

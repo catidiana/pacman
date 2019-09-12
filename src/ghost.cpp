@@ -34,6 +34,7 @@ protected:
     int shy_time;
     uint32_t start_time;
     uint32_t scared_time;
+    uint32_t scared_interval;
     V2 walk_target_ceil;
     bool bonus;
 
@@ -42,31 +43,15 @@ public:
     Ghost_States awaiting_state;
     Ghost_Direction direction;
     V2 gh_coord;
+    V2 reset_coord;
     V2 matr_ceil;
     uint8_t wave;
     uint32_t walking_time[4];
     uint32_t hunting_time[4];
 
-    ghost (Ghost_Type type_, V2 target_) : type(type_), walk_target_ceil(target_) {
-        shy_time = 1000*type;
-        wave = 0;
-        bonus = false;
-        for (int i = 0; i < 4; i++) {
-            walking_time[i] = 7000;
-            if (i > 2) walking_time[i] -= 2000;
-            hunting_time[i] = 20000;
-        }
-        if (type == OIKAKE_RED) {
-            state = GHOST_WALK;
-            awaiting_state = GHOST_HUNT;
-            direction = DIR_RIGHT;
-        } else {
-            state = GHOST_SHY;
-            awaiting_state = GHOST_TRANSFER;
-            direction = DIR_LEFT;
-        }
+    ghost (Ghost_Type type_, V2 target_, V2 res_coord_) : type(type_), walk_target_ceil(target_), reset_coord(res_coord_) {
+        reset_ghost();
         bonus_ = load_image("res/bonus.png");
-
         ghost_fright[0]  = load_image("res/ghost_fr_1.png");
         ghost_fright[1]  = load_image("res/ghost_fr_2.png");
         ghost_fright[2]  = load_image("res/ghost_fr_3.png");
@@ -76,9 +61,34 @@ public:
         ghost_dead[1]  = load_image("res/dead_ghost_left.png");
         ghost_dead[2]  = load_image("res/dead_ghost_down.png");
         ghost_dead[3]  = load_image("res/dead_ghost_right.png");
-
+    }
+    void reset_ghost() {
+        shy_time = 1000*type;
+        if (LEVEL > 5) shy_time = 1000;
+        wave = 0;
+        gh_coord.x = reset_coord.x;
+        gh_coord.y = reset_coord.y;
+        define_matr_ceil();
+        bonus = false;
+        for (int i = 0; i < 4; i++) {
+            walking_time[i] = 8000;
+            if (i > 2) walking_time[i] -= 2000;
+            if (LEVEL < 5) walking_time[i] -=1000*LEVEL;
+            hunting_time[i] = 15000 + LEVEL*5000;
+        }
+        if (type == OIKAKE_RED) {
+            state = GHOST_TRANSFER;
+            awaiting_state = GHOST_WALK;
+            direction = DIR_RIGHT;
+        } else {
+            state = GHOST_SHY;
+            awaiting_state = GHOST_TRANSFER;
+            direction = DIR_LEFT;
+        }
         start_time = SDL_GetTicks();
         scared_time = SDL_GetTicks();
+        if (LEVEL < 8) scared_interval = 10000 - LEVEL*1000;
+        else scared_interval = 3000;
     }
     void define_matr_ceil() {
         matr_ceil.x = (gh_coord.x/10)/2;
@@ -237,9 +247,10 @@ public:
         switch (awaiting_state) {
 
         case GHOST_SHY: {
-            if (matr_ceil.x == 14) {
+            if (matr_ceil.x == 14 && matr_ceil.y == 14) {
                 gh_coord.x = 290 + 40*(rand()%3 - 1);
                 gh_coord.y = 370;
+                direction = DIR_LEFT;
                 shy_time += 1000;
                 start_time = SDL_GetTicks();
                 define_matr_ceil();
@@ -273,10 +284,10 @@ public:
             }
             else if (state == GHOST_FRIGHTENED) {
                 uint32_t current_time = SDL_GetTicks();
-                if (current_time >= scared_time + 9000 && gh_coord.x%20 == 10 && gh_coord.y%20 == 10) {
+                if (current_time >= scared_time + scared_interval && gh_coord.x%20 == 10 && gh_coord.y%20 == 10) {
                     state = GHOST_WALK;
                     awaiting_state = GHOST_HUNT;
-                    start_time -= 9000;
+                    start_time += scared_interval;
                 }
             }
         } break;
@@ -293,10 +304,10 @@ public:
                 }
             } else if (state == GHOST_FRIGHTENED) {
                 uint32_t current_time = SDL_GetTicks();
-                if (current_time >= scared_time + 9000 && gh_coord.x%20 == 10 && gh_coord.y%20 == 10) {
+                if (current_time >= scared_time + scared_interval && gh_coord.x%20 == 10 && gh_coord.y%20 == 10) {
                     state = GHOST_HUNT;
                     awaiting_state = GHOST_WALK;
-                    start_time -= 9000;
+                    start_time -= scared_interval;
                 }
             }
         } break;
@@ -314,7 +325,7 @@ public:
             }
                 break;
             case GHOST_SHY: {
-                start_time = start_time + 9000;
+                start_time = start_time + scared_interval;
                 awaiting_state = GHOST_TRANSFER;
             }
                 break;
@@ -361,7 +372,7 @@ public:
             }
             walk_to_target({35 - PacMan.matr_ceil.y, 27 - PacMan.matr_ceil.x}, 1);
             uint32_t current_time = SDL_GetTicks();
-            if (current_time < scared_time + 7000) draw_image(GameWindow, ghost_fright[(s%8)/4], gh_coord.x, gh_coord.y);
+            if (current_time + 2000 < scared_time + scared_interval) draw_image(GameWindow, ghost_fright[(s%8)/4], gh_coord.x, gh_coord.y);
             else draw_image(GameWindow, ghost_fright[(s%16)/4], gh_coord.x, gh_coord.y);
 
         } break;
@@ -385,7 +396,7 @@ class ghost_red : public ghost
 private:
     Image ghost_red_mask[4][2];
 public:
-    ghost_red () : ghost(OIKAKE_RED, {33, 0}) {
+    ghost_red () : ghost(OIKAKE_RED, {33, 0}, {280, 430}) {
         ghost_red_mask[0][0]  = load_image("res/ghost_red_up_1.png");
         ghost_red_mask[0][1]  = load_image("res/ghost_red_up_2.png");
         ghost_red_mask[1][0]  = load_image("res/ghost_red_left_1.png");
@@ -394,8 +405,6 @@ public:
         ghost_red_mask[2][1]  = load_image("res/ghost_red_down_2.png");
         ghost_red_mask[3][0]  = load_image("res/ghost_red_right_1.png");
         ghost_red_mask[3][1]  = load_image("res/ghost_red_right_2.png");
-        gh_coord = {280, 430};
-        define_matr_ceil();
 
     }
     void action (Image GameWindow, Image* image_digits, uint32_t s, pacman PacMan) override {
@@ -410,7 +419,7 @@ class ghost_pink : public ghost
 private:
     Image ghost_pink_mask[4][2];
 public:
-    ghost_pink () : ghost(MACHIBUSE_PINK, {3, 0}) {
+    ghost_pink () : ghost(MACHIBUSE_PINK, {3, 0}, {290, 370}) {
         ghost_pink_mask[0][0]  = load_image("res/ghost_pink_up_1.png");
         ghost_pink_mask[0][1]  = load_image("res/ghost_pink_up_2.png");
         ghost_pink_mask[1][0]  = load_image("res/ghost_pink_left_1.png");
@@ -419,8 +428,6 @@ public:
         ghost_pink_mask[2][1]  = load_image("res/ghost_pink_down_2.png");
         ghost_pink_mask[3][0]  = load_image("res/ghost_pink_right_1.png");
         ghost_pink_mask[3][1]  = load_image("res/ghost_pink_right_2.png");
-        gh_coord = {290, 370};
-        define_matr_ceil();
 
     }
     void hunt (pacman PacMan) override {
@@ -450,7 +457,7 @@ class ghost_orange : public ghost
 private:
     Image ghost_orange_mask[4][2];
 public:
-    ghost_orange () : ghost(OTOBOKE_ORANGE, {0, 25}) {
+    ghost_orange () : ghost(OTOBOKE_ORANGE, {0, 25}, {330, 370}) {
         ghost_orange_mask[0][0]  = load_image("res/ghost_orange_up_1.png");
         ghost_orange_mask[0][1]  = load_image("res/ghost_orange_up_2.png");
         ghost_orange_mask[1][0]  = load_image("res/ghost_orange_left_1.png");
@@ -459,8 +466,6 @@ public:
         ghost_orange_mask[2][1]  = load_image("res/ghost_orange_down_2.png");
         ghost_orange_mask[3][0]  = load_image("res/ghost_orange_right_1.png");
         ghost_orange_mask[3][1]  = load_image("res/ghost_orange_right_2.png");
-        gh_coord = {330, 370};
-        define_matr_ceil();
     }
     void hunt (pacman PacMan) override {
         if (abs((int)PacMan.matr_ceil.x - (int)matr_ceil.x) > 8 && abs((int)PacMan.matr_ceil.y - (int)matr_ceil.y) > 8) walk_to_target(walk_target_ceil);
@@ -480,7 +485,7 @@ private:
     Image ghost_cyan_mask[4][2];
     V2 dependent;
 public:
-    ghost_cyan () : ghost(KIMAGURE_CYAN, {33, 25}) {
+    ghost_cyan () : ghost(KIMAGURE_CYAN, {33, 25}, {250, 370}) {
         ghost_cyan_mask[0][0]  = load_image("res/ghost_cyan_up_1.png");
         ghost_cyan_mask[0][1]  = load_image("res/ghost_cyan_up_2.png");
         ghost_cyan_mask[1][0]  = load_image("res/ghost_cyan_left_1.png");
@@ -489,8 +494,6 @@ public:
         ghost_cyan_mask[2][1]  = load_image("res/ghost_cyan_down_2.png");
         ghost_cyan_mask[3][0]  = load_image("res/ghost_cyan_right_1.png");
         ghost_cyan_mask[3][1]  = load_image("res/ghost_cyan_right_2.png");
-        gh_coord = {250, 370};
-        define_matr_ceil();
     }
     void hunt (pacman PacMan) override {
         switch (PacMan.state) {

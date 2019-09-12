@@ -11,12 +11,12 @@ enum Pac_States {
 class pacman
 {
 private:
-    Image pacman_stay;
     Image pacman_go_left[2];
     Image pacman_go_right[2];
     Image pacman_go_down[2];
     Image pacman_go_up[2];
 public:
+    Image pacman_stay;
     V2 pac_coord;
     V2 matr_ceil;
     Pac_States state;
@@ -24,10 +24,6 @@ public:
 
 
     pacman() {
-        pac_coord = {280, 190};
-        define_matr_ceil();
-        state = PAC_WALK_LEFT;
-        awaiting_state = PAC_NONE;
         pacman_stay        = load_image("res/pacman.png");
         pacman_go_left[0]  = load_image("res/pacman_45_left.png");
         pacman_go_left[1]  = load_image("res/pacman_90_left.png");
@@ -37,6 +33,13 @@ public:
         pacman_go_down[1]  = load_image("res/pacman_90_down.png");
         pacman_go_up[0]    = load_image("res/pacman_45_up.png");
         pacman_go_up[1]    = load_image("res/pacman_90_up.png");
+        reset_pacman();
+    }
+    void reset_pacman () {
+        pac_coord = {280, 190};
+        define_matr_ceil();
+        state = PAC_WALK_LEFT;
+        awaiting_state = PAC_NONE;
     }
     void change_state(Pac_States new_state) {
         if (new_state != state) awaiting_state = new_state;

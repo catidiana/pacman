@@ -61,6 +61,7 @@ main (int argc, char **argv)
     Image background = load_image("res/background.png");
     Image level = load_image("res/level.png");
     Image high_score = load_image("res/high_score.png");
+    Image you_win = load_image("res/you_win.png");
     Image digits[10];
     char t[10];
     strcpy(t,"res/0.png");
@@ -137,6 +138,18 @@ main (int argc, char **argv)
         glClear (GL_COLOR_BUFFER_BIT);
 
         //what happens here
+        if (Food.food_counter == 0) {
+            SDL_Delay(4000);
+            LEVEL++;
+            PacMan.reset_pacman();
+            Food.refill_food();
+            Oikake.reset_ghost();
+            Machibuse.reset_ghost();
+            Otoboke.reset_ghost();
+            Kimagure.reset_ghost();
+        }
+
+
         draw_image(GameWindow, background, MAIN_WINDOW_INIT_WIDTH/2, MAIN_WINDOW_INIT_HEIGHT/2);
         draw_image(GameWindow, level, 40, 700);
         draw_integer (GameWindow, digits, 100, 700, LEVEL);
@@ -146,7 +159,7 @@ main (int argc, char **argv)
         Food.draw_food(GameWindow, s);
         PacMan.action(GameWindow, s);
         Food.eaten_food(PacMan, GameWindow, digits);
-        if (Food.energizer_mode == 1 && LEVEL < 5) {
+        if (Food.energizer_mode == 1 && LEVEL < 10) {
             dead_bonus_count = 0;
             Oikake.awaiting_state = GHOST_FRIGHTENED;
             Machibuse.awaiting_state = GHOST_FRIGHTENED;
@@ -158,9 +171,13 @@ main (int argc, char **argv)
         Otoboke.action(GameWindow, digits, s, PacMan);
         Kimagure.update_dependent(Oikake.matr_ceil);
         Kimagure.action(GameWindow, digits, s, PacMan);
-
-
         ++s;
+
+        if (Food.food_counter == 0) {
+            draw_image(GameWindow, you_win, 280, 310);
+            draw_image(GameWindow, PacMan.pacman_stay, PacMan.pac_coord.x, PacMan.pac_coord.y);
+        }
+
         update_image_texture (GameWindow);
         show_image           (GameWindow);
 
