@@ -4,7 +4,8 @@
 
 
 #include <SDL2/SDL.h>
-#include<SDL2/SDL_image.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <GL/gl.h>
 
 #include <stdio.h>
@@ -39,7 +40,15 @@ main (int argc, char **argv)
 {
     printf("Setup Game... ");
     //**********SETUP**********
-    SDL_Init (SDL_INIT_VIDEO);
+    //Initialize SDL
+    if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
+    {
+        printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
+    }
+    if (Mix_OpenAudio (44100, AUDIO_S16SYS, 2, 1024) < 0)
+    {
+        fprintf (stderr, "Error: Initializing SDL_mixer: %s\n", Mix_GetError ());
+    }
     SDL_Window *main_window = SDL_CreateWindow ("Graphics", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                                 MAIN_WINDOW_INIT_WIDTH, MAIN_WINDOW_INIT_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     assert (main_window);
@@ -56,11 +65,16 @@ main (int argc, char **argv)
     uint32_t window_h = MAIN_WINDOW_INIT_HEIGHT;
     Image GameWindow = new_image (window_w, window_h);
     uniform_fill(GameWindow, {0, 0, 240});
+    printf("success.\nLoad sounds... ");
+    Sound scared_sound = load_sound("sound/scared.wav");
+    Sound start = load_sound("sound/start.wav");
+    Sound win = load_sound("sound/win.wav");
     printf("success.\nLoad images... ");
 
     Image background = load_image("res/background.png");
     Image level = load_image("res/level.png");
     Image high_score = load_image("res/high_score.png");
+    Image ready = load_image("res/ready.png");
     Image you_win = load_image("res/you_win.png");
     Image digits[10];
     char t[10];
@@ -139,7 +153,7 @@ main (int argc, char **argv)
 
         //what happens here
         if (Food.food_counter == 0) {
-            SDL_Delay(4000);
+            SDL_Delay(5000);
             LEVEL++;
             PacMan.reset_pacman();
             Food.refill_food();
@@ -147,6 +161,10 @@ main (int argc, char **argv)
             Machibuse.reset_ghost();
             Otoboke.reset_ghost();
             Kimagure.reset_ghost();
+        }
+
+        if (s == 1) {
+            SDL_Delay(4000);
         }
 
 
@@ -161,6 +179,7 @@ main (int argc, char **argv)
         Food.eaten_food(PacMan, GameWindow, digits);
         if (Food.energizer_mode == 1 && LEVEL < 10) {
             dead_bonus_count = 0;
+            play_sound(scared_sound);
             Oikake.awaiting_state = GHOST_FRIGHTENED;
             Machibuse.awaiting_state = GHOST_FRIGHTENED;
             Otoboke.awaiting_state = GHOST_FRIGHTENED;
@@ -171,12 +190,20 @@ main (int argc, char **argv)
         Otoboke.action(GameWindow, digits, s, PacMan);
         Kimagure.update_dependent(Oikake.matr_ceil);
         Kimagure.action(GameWindow, digits, s, PacMan);
-        ++s;
+
 
         if (Food.food_counter == 0) {
             draw_image(GameWindow, you_win, 280, 310);
+            play_sound(win);
             draw_image(GameWindow, PacMan.pacman_stay, PacMan.pac_coord.x, PacMan.pac_coord.y);
         }
+
+        if (s == 0) {
+            play_sound(start);
+            draw_image(GameWindow, ready, 280, 310);
+        }
+
+        ++s;
 
         update_image_texture (GameWindow);
         show_image           (GameWindow);

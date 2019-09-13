@@ -15,12 +15,14 @@ private:
     Image pacman_go_right[2];
     Image pacman_go_down[2];
     Image pacman_go_up[2];
+    Image pacman_lifes_count[2];
 public:
     Image pacman_stay;
     V2 pac_coord;
     V2 matr_ceil;
     Pac_States state;
     Pac_States awaiting_state;
+    uint8_t pacman_lifes;
 
 
     pacman() {
@@ -33,7 +35,10 @@ public:
         pacman_go_down[1]  = load_image("res/pacman_90_down.png");
         pacman_go_up[0]    = load_image("res/pacman_45_up.png");
         pacman_go_up[1]    = load_image("res/pacman_90_up.png");
+        pacman_lifes_count[1]    = load_image("res/lifes_2.png");
+        pacman_lifes_count[0]    = load_image("res/lifes_1.png");
         reset_pacman();
+        pacman_lifes = 3;
     }
     void reset_pacman () {
         pac_coord = {280, 190};
@@ -125,6 +130,7 @@ public:
         case PAC_NONE: break;
         }
         define_matr_ceil();
+        if (pacman_lifes > 1) draw_image(GameWindow, pacman_lifes_count[pacman_lifes - 2], 40, 20);
     }
 
 };

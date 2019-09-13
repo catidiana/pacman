@@ -15,6 +15,8 @@ private:
     Image energizer[2];
     Image fruit;
     Image bonus_;
+    Sound chomp;
+    Sound fruit_b;
     uint32_t fruit_time;
     uint32_t fruit_bonus;
 public:
@@ -27,6 +29,8 @@ public:
         energizer[1] = load_image("res/energizer_s.png");
         fruit = load_image("res/cherry.png");
         bonus_ = load_image("res/bonus.png");
+        chomp = load_sound("sound/food.wav");
+        fruit_b = load_sound("sound/bonus.wav");
         refill_food();
 
     }
@@ -55,7 +59,7 @@ public:
         if (energizers[1]) draw_image(GameWindow, energizer[(s%16)/8], 30, 590);
         if (energizers[2]) draw_image(GameWindow, energizer[(s%16)/8], 530, 190);
         if (energizers[3]) draw_image(GameWindow, energizer[(s%16)/8], 530, 590);
-        if ((food_counter == 160 || food_counter == 60) && fruits == false) {
+        if ((food_counter == 160 || food_counter == 60) && fruits == false && bonus == false) {
             fruits = true;
             fruit_time = SDL_GetTicks();
         }
@@ -71,6 +75,7 @@ public:
     }
     void eaten_fruit (pacman PacMan) {
         if (PacMan.matr_ceil.y == 20 && PacMan.matr_ceil.x == 13) {
+            play_sound(fruit_b);
             fruits = false;
             srand (time(NULL));
             fruit_bonus = (rand()%(5 + LEVEL))*100 + LEVEL*100;
@@ -91,6 +96,7 @@ public:
             FoodMatrix[PacMan.matr_ceil.y][PacMan.matr_ceil.x] = false;
             GAME_SCORE += 10;
             food_counter--;
+            play_sound(chomp);
             if (PacMan.matr_ceil.y == 26 &&  PacMan.matr_ceil.x == 1) {
                 energizers[0] = false;
                 eaten_energizer();

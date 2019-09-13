@@ -31,6 +31,7 @@ protected:
     Image ghost_fright[4];
     Image ghost_dead[4];
     Image bonus_;
+    Sound ghost_b;
     int shy_time;
     uint32_t start_time;
     uint32_t scared_time;
@@ -52,6 +53,7 @@ public:
     ghost (Ghost_Type type_, V2 target_, V2 res_coord_) : type(type_), walk_target_ceil(target_), reset_coord(res_coord_) {
         reset_ghost();
         bonus_ = load_image("res/bonus.png");
+        ghost_b = load_sound("sound/bonus.wav");
         ghost_fright[0]  = load_image("res/ghost_fr_1.png");
         ghost_fright[1]  = load_image("res/ghost_fr_2.png");
         ghost_fright[2]  = load_image("res/ghost_fr_3.png");
@@ -366,6 +368,7 @@ public:
                 awaiting_state = GHOST_EATEN;
                 if (bonus == false) {
                     bonus = true;
+                    play_sound(ghost_b);
                     ++dead_bonus_count;
                     GAME_SCORE +=200*dead_bonus_count;
                 }

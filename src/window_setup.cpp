@@ -14,6 +14,8 @@ struct Image {
     GLuint texture;
 };
 
+typedef Mix_Chunk * Sound;
+
 static void
 set_window_transform (int window_w, int window_h)
 {
@@ -170,4 +172,26 @@ uniform_fill (Image image, V3 color)
     {
         image.pixels[i] = color;
     }
+}
+
+static Sound
+load_sound (const char *filename)
+{
+
+  Mix_Chunk *sound = Mix_LoadWAV (filename);
+  if (!sound)
+    {
+      printf ("File not found %s\n", filename);
+      assert (sound);
+      return 0;
+    }
+
+  return sound;
+}
+
+
+static void
+play_sound (Mix_Chunk *sound)
+{
+  Mix_PlayChannel (-1, sound, 0);
 }
