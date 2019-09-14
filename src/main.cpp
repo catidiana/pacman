@@ -206,20 +206,26 @@ main (int argc, char **argv)
             Otoboke.awaiting_state = GHOST_FRIGHTENED;
             Kimagure.awaiting_state = GHOST_FRIGHTENED;
         }
+
+        check_pacman_life (GameWindow, s, PacMan, Oikake, Machibuse, Otoboke, Kimagure);
+
         Oikake.action(GameWindow, digits, s, PacMan);
         Machibuse.action(GameWindow, digits, s, PacMan);
         Otoboke.action(GameWindow, digits, s, PacMan);
         Kimagure.update_dependent(Oikake.matr_ceil);
         Kimagure.action(GameWindow, digits, s, PacMan);
 
-        if ((Oikake.matr_ceil.x == PacMan.matr_ceil.x && Oikake.matr_ceil.y == PacMan.matr_ceil.y && Oikake.state != GHOST_FRIGHTENED && Oikake.state != GHOST_EATEN) ||
+
+        if (PacMan.state != PAC_DIES) check_pacman_life (GameWindow, s, PacMan, Oikake, Machibuse, Otoboke, Kimagure);
+
+      /*  if ((Oikake.matr_ceil.x == PacMan.matr_ceil.x && Oikake.matr_ceil.y == PacMan.matr_ceil.y && Oikake.state != GHOST_FRIGHTENED && Oikake.state != GHOST_EATEN) ||
                 (Machibuse.matr_ceil.x == PacMan.matr_ceil.x && Machibuse.matr_ceil.y == PacMan.matr_ceil.y && Machibuse.state != GHOST_FRIGHTENED && Machibuse.state != GHOST_EATEN) ||
                 (Otoboke.matr_ceil.x == PacMan.matr_ceil.x && Otoboke.matr_ceil.y == PacMan.matr_ceil.y && Otoboke.state != GHOST_FRIGHTENED && Otoboke.state != GHOST_EATEN) ||
                 (Kimagure.matr_ceil.x == PacMan.matr_ceil.x && Kimagure.matr_ceil.y == PacMan.matr_ceil.y && Kimagure.state != GHOST_FRIGHTENED && Kimagure.state != GHOST_EATEN)) {
             PacMan.state = PAC_DIES;
             PacMan.awaiting_state = PAC_NONE;
             PacMan.action(GameWindow, s);
-        }
+        }*/
 
         if (PacMan.pacman_lifes == 0)  {
             draw_image(GameWindow, game_over, 280, 310);

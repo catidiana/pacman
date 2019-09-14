@@ -249,6 +249,17 @@ public:
     }
     virtual void draw_avatar (Image GameWindow, uint32_t s) {
         draw_image(GameWindow, ghost_fright[(s%16)/4], gh_coord.x, gh_coord.y);
+    }    
+    void ghost_eaten_check(pacman PacMan) {
+        if (matr_ceil.y == PacMan.matr_ceil.y && matr_ceil.x == PacMan.matr_ceil.x) {
+            awaiting_state = GHOST_EATEN;
+            if (bonus == false) {
+                bonus = true;
+                play_sound(ghost_b);
+                ++dead_bonus_count;
+                GAME_SCORE +=200*dead_bonus_count;
+            }
+        }
     }
     void calculating_path(Image GameWindow, Image* image_digits, uint32_t s, pacman PacMan) {
         switch (awaiting_state) {
@@ -369,16 +380,9 @@ public:
         case GHOST_HUNT: hunt(PacMan);
             break;
         case GHOST_FRIGHTENED: {
-            if (matr_ceil.y == PacMan.matr_ceil.y && matr_ceil.x == PacMan.matr_ceil.x) {
-                awaiting_state = GHOST_EATEN;
-                if (bonus == false) {
-                    bonus = true;
-                    play_sound(ghost_b);
-                    ++dead_bonus_count;
-                    GAME_SCORE +=200*dead_bonus_count;
-                }
-            }
+            ghost_eaten_check(PacMan);
             walk_to_target({35 - PacMan.matr_ceil.y, 27 - PacMan.matr_ceil.x}, 1);
+            if (awaiting_state != GHOST_EATEN) ghost_eaten_check(PacMan);
             uint32_t current_time = SDL_GetTicks();
             if (current_time + 2000 < scared_time + scared_interval) draw_image(GameWindow, ghost_fright[(s%8)/4], gh_coord.x, gh_coord.y);
             else draw_image(GameWindow, ghost_fright[(s%16)/4], gh_coord.x, gh_coord.y);
@@ -525,3 +529,16 @@ public:
         dependent.y = new_dep.y;
     }
 };
+
+
+
+static void check_pacman_life (Image GameWindow, uint32_t s, pacman& PacMan, ghost Oikake, ghost Machibuse, ghost Otoboke, ghost Kimagure)
+{ if ((Oikake.matr_ceil.x == PacMan.matr_ceil.x && Oikake.matr_ceil.y == PacMan.matr_ceil.y && Oikake.state != GHOST_FRIGHTENED && Oikake.state != GHOST_EATEN) ||
+          (Machibuse.matr_ceil.x == PacMan.matr_ceil.x && Machibuse.matr_ceil.y == PacMan.matr_ceil.y && Machibuse.state != GHOST_FRIGHTENED && Machibuse.state != GHOST_EATEN) ||
+          (Otoboke.matr_ceil.x == PacMan.matr_ceil.x && Otoboke.matr_ceil.y == PacMan.matr_ceil.y && Otoboke.state != GHOST_FRIGHTENED && Otoboke.state != GHOST_EATEN) ||
+          (Kimagure.matr_ceil.x == PacMan.matr_ceil.x && Kimagure.matr_ceil.y == PacMan.matr_ceil.y && Kimagure.state != GHOST_FRIGHTENED && Kimagure.state != GHOST_EATEN)) {
+      PacMan.state = PAC_DIES;
+      PacMan.awaiting_state = PAC_NONE;
+      PacMan.action(GameWindow, s);
+  }
+}
