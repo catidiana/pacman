@@ -37,6 +37,9 @@ protected:
     uint32_t scared_time;
     uint32_t scared_interval;
     V2 walk_target_ceil;
+    uint8_t wave;
+    uint32_t walking_time[4];
+    uint32_t hunting_time[4];
     bool bonus;
 
 public:
@@ -46,14 +49,13 @@ public:
     V2 gh_coord;
     V2 reset_coord;
     V2 matr_ceil;
-    uint8_t wave;
-    uint32_t walking_time[4];
-    uint32_t hunting_time[4];
+
 
     ghost (Ghost_Type type_, V2 target_, V2 res_coord_) : type(type_), walk_target_ceil(target_), reset_coord(res_coord_) {
         reset_ghost();
         bonus_ = load_image("res/bonus.png");
         ghost_b = load_sound("sound/bonus.wav");
+
         ghost_fright[0]  = load_image("res/ghost_fr_1.png");
         ghost_fright[1]  = load_image("res/ghost_fr_2.png");
         ghost_fright[2]  = load_image("res/ghost_fr_3.png");
@@ -93,8 +95,8 @@ public:
         else scared_interval = 3000;
     }
     void define_matr_ceil() {
-        matr_ceil.x = (gh_coord.x/10)/2;
-        matr_ceil.y = ((MAIN_WINDOW_INIT_HEIGHT - gh_coord.y)/10)/2;
+        matr_ceil.x = gh_coord.x/20;
+        matr_ceil.y = (MAIN_WINDOW_INIT_HEIGHT - 1 - gh_coord.y)/20;
     }
     void shy_mode (uint32_t s) {
         if (s%40 < 20) {
@@ -245,6 +247,9 @@ public:
     virtual void hunt (pacman PacMan) {
         walk_to_target(PacMan.matr_ceil);
     }
+    virtual void draw_avatar (Image GameWindow, uint32_t s) {
+        draw_image(GameWindow, ghost_fright[(s%16)/4], gh_coord.x, gh_coord.y);
+    }
     void calculating_path(Image GameWindow, Image* image_digits, uint32_t s, pacman PacMan) {
         switch (awaiting_state) {
 
@@ -389,9 +394,12 @@ public:
         default:
             break;
         }
-        define_matr_ceil();
     }
-    virtual void action(Image GameWindow, Image* image_digits, uint32_t s, pacman PacMan) = 0;
+    void action (Image GameWindow, Image* image_digits, uint32_t s, pacman PacMan) {
+        calculating_path(GameWindow, image_digits, s, PacMan);
+        define_matr_ceil();
+        draw_avatar (GameWindow, s);
+    }
 };
 
 class ghost_red : public ghost
@@ -408,10 +416,8 @@ public:
         ghost_red_mask[2][1]  = load_image("res/ghost_red_down_2.png");
         ghost_red_mask[3][0]  = load_image("res/ghost_red_right_1.png");
         ghost_red_mask[3][1]  = load_image("res/ghost_red_right_2.png");
-
     }
-    void action (Image GameWindow, Image* image_digits, uint32_t s, pacman PacMan) override {
-        calculating_path(GameWindow, image_digits, s, PacMan);
+    void draw_avatar (Image GameWindow, uint32_t s) override {
         if (state != GHOST_FRIGHTENED && state != GHOST_EATEN)
             draw_image(GameWindow, ghost_red_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
     }
@@ -447,8 +453,7 @@ public:
             break;
         }
     }
-    void action (Image GameWindow, Image* image_digits, uint32_t s, pacman PacMan) override {
-        calculating_path(GameWindow, image_digits, s, PacMan);
+    void draw_avatar (Image GameWindow, uint32_t s) override {
         if (state != GHOST_FRIGHTENED && state != GHOST_EATEN)
             draw_image(GameWindow, ghost_pink_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
     }
@@ -474,8 +479,7 @@ public:
         if (abs((int)PacMan.matr_ceil.x - (int)matr_ceil.x) > 8 && abs((int)PacMan.matr_ceil.y - (int)matr_ceil.y) > 8) walk_to_target(walk_target_ceil);
         else walk_to_target(PacMan.matr_ceil);
     }
-    void action (Image GameWindow, Image* image_digits, uint32_t s, pacman PacMan) override {
-        calculating_path(GameWindow, image_digits, s, PacMan);
+    void draw_avatar (Image GameWindow, uint32_t s) override {
         if (state != GHOST_FRIGHTENED && state != GHOST_EATEN)
             draw_image(GameWindow, ghost_orange_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
     }
@@ -512,13 +516,12 @@ public:
             break;
         }
     }
+    void draw_avatar (Image GameWindow, uint32_t s) override {
+        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN)
+            draw_image(GameWindow, ghost_cyan_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
+    }
     void update_dependent (V2 new_dep) {
         dependent.x = new_dep.x;
         dependent.y = new_dep.y;
-    }
-    void action (Image GameWindow, Image* image_digits, uint32_t s, pacman PacMan) override {
-        calculating_path(GameWindow, image_digits, s, PacMan);
-        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN)
-            draw_image(GameWindow, ghost_cyan_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
     }
 };

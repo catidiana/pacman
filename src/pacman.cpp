@@ -16,6 +16,7 @@ private:
     Image pacman_go_down[2];
     Image pacman_go_up[2];
     Image pacman_lifes_count[2];
+    Sound dead_pac;
 public:
     Image pacman_stay;
     V2 pac_coord;
@@ -37,6 +38,7 @@ public:
         pacman_go_up[1]    = load_image("res/pacman_90_up.png");
         pacman_lifes_count[1]    = load_image("res/lifes_2.png");
         pacman_lifes_count[0]    = load_image("res/lifes_1.png");
+        dead_pac = load_sound("sound/death.wav");
         reset_pacman();
         pacman_lifes = 3;
     }
@@ -50,8 +52,8 @@ public:
         if (new_state != state) awaiting_state = new_state;
     }
     void define_matr_ceil() {
-        matr_ceil.x = (pac_coord.x/10.0)/2;
-        matr_ceil.y = ((MAIN_WINDOW_INIT_HEIGHT - pac_coord.y)/10.0)/2;
+        matr_ceil.x = pac_coord.x/20;
+        matr_ceil.y = (MAIN_WINDOW_INIT_HEIGHT - 1 - pac_coord.y)/20;
     }
     void stay_on_place (Image GameWindow) {
         draw_image(GameWindow, pacman_stay, pac_coord.x, pac_coord.y);
@@ -75,8 +77,13 @@ public:
         pac_coord.y +=2;
         draw_image(GameWindow, pacman_go_up[(s%8)/4], pac_coord.x, pac_coord.y);
     }
-    void death() {}
+    void death() {
+        --pacman_lifes;
+        play_sound(dead_pac);
+    }
     void action (Image GameWindow, uint32_t s) {
+        //analysis of awaiting state
+
         switch (awaiting_state) {
         case PAC_NONE: break;
         case PAC_WALK_LEFT: {
@@ -106,6 +113,9 @@ public:
         default:
             break;
         }
+
+        //analysis of current state
+
         switch (state) {
         case PAC_STAY: stay_on_place(GameWindow);
             break;
@@ -129,6 +139,7 @@ public:
             break;
         case PAC_NONE: break;
         }
+
         define_matr_ceil();
         if (pacman_lifes > 1) draw_image(GameWindow, pacman_lifes_count[pacman_lifes - 2], 40, 20);
     }

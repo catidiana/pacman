@@ -63,6 +63,9 @@ main (int argc, char **argv)
 
     uint32_t window_w = MAIN_WINDOW_INIT_WIDTH;
     uint32_t window_h = MAIN_WINDOW_INIT_HEIGHT;
+    uint32_t record = 0;
+    FILE *f = fopen("record.txt", "r");
+    if (f != NULL) fscanf(f, "%d", &record);
     Image GameWindow = new_image (window_w, window_h);
     uniform_fill(GameWindow, {0, 0, 240});
     printf("success.\nLoad sounds... ");
@@ -76,6 +79,8 @@ main (int argc, char **argv)
     Image high_score = load_image("res/high_score.png");
     Image ready = load_image("res/ready.png");
     Image you_win = load_image("res/you_win.png");
+    Image game_over = load_image("res/game_over.png");
+    Image pac_dies = load_image("res/pac_die.png");
     Image digits[10];
     char t[10];
     strcpy(t,"res/0.png");
@@ -155,6 +160,7 @@ main (int argc, char **argv)
         if (Food.food_counter == 0) {
             SDL_Delay(5000);
             LEVEL++;
+            PacMan.pacman_lifes = 3;
             PacMan.reset_pacman();
             Food.refill_food();
             Oikake.reset_ghost();
@@ -167,10 +173,25 @@ main (int argc, char **argv)
             SDL_Delay(4000);
         }
 
+        if(PacMan.state == PAC_DIES) {
+            SDL_Delay(2000);
+            PacMan.reset_pacman();
+            Oikake.reset_ghost();
+            Machibuse.reset_ghost();
+            Otoboke.reset_ghost();
+            Kimagure.reset_ghost();
+            if (PacMan.pacman_lifes == 0) {
+                s = 0;
+                PacMan.pacman_lifes = 3;
+                Food.refill_food();
+            }
+        }
+
 
         draw_image(GameWindow, background, MAIN_WINDOW_INIT_WIDTH/2, MAIN_WINDOW_INIT_HEIGHT/2);
         draw_image(GameWindow, level, 40, 700);
         draw_integer (GameWindow, digits, 100, 700, LEVEL);
+        draw_integer (GameWindow, digits, 556, 680, record);
         draw_integer (GameWindow, digits, 100, 680, GAME_SCORE);
         draw_image(GameWindow, high_score, 490, 700);
 
@@ -191,15 +212,38 @@ main (int argc, char **argv)
         Kimagure.update_dependent(Oikake.matr_ceil);
         Kimagure.action(GameWindow, digits, s, PacMan);
 
+        if ((Oikake.matr_ceil.x == PacMan.matr_ceil.x && Oikake.matr_ceil.y == PacMan.matr_ceil.y && Oikake.state != GHOST_FRIGHTENED && Oikake.state != GHOST_EATEN) ||
+                (Machibuse.matr_ceil.x == PacMan.matr_ceil.x && Machibuse.matr_ceil.y == PacMan.matr_ceil.y && Machibuse.state != GHOST_FRIGHTENED && Machibuse.state != GHOST_EATEN) ||
+                (Otoboke.matr_ceil.x == PacMan.matr_ceil.x && Otoboke.matr_ceil.y == PacMan.matr_ceil.y && Otoboke.state != GHOST_FRIGHTENED && Otoboke.state != GHOST_EATEN) ||
+                (Kimagure.matr_ceil.x == PacMan.matr_ceil.x && Kimagure.matr_ceil.y == PacMan.matr_ceil.y && Kimagure.state != GHOST_FRIGHTENED && Kimagure.state != GHOST_EATEN)) {
+            PacMan.state = PAC_DIES;
+            PacMan.awaiting_state = PAC_NONE;
+            PacMan.action(GameWindow, s);
+        }
+
+        if (PacMan.pacman_lifes == 0)  {
+            draw_image(GameWindow, game_over, 280, 310);
+            draw_image(GameWindow, pac_dies, PacMan.pac_coord.x, PacMan.pac_coord.y);
+            if (GAME_SCORE > record) {
+                record = GAME_SCORE;
+                FILE *f = fopen("record.txt", "w");
+                fprintf(f, "%d", record);
+            }
+            LEVEL = 1;
+            GAME_SCORE = 0;
+        }
+
 
         if (Food.food_counter == 0) {
-            draw_image(GameWindow, you_win, 280, 310);
+            draw_image(GameWindow, you_win, MAIN_WINDOW_INIT_WIDTH/2, MAIN_WINDOW_INIT_HEIGHT/2);
             play_sound(win);
             draw_image(GameWindow, PacMan.pacman_stay, PacMan.pac_coord.x, PacMan.pac_coord.y);
         }
 
         if (s == 0) {
             play_sound(start);
+            FILE *f = fopen("record.txt", "r");
+            if (f != NULL) fscanf(f, "%d", &record);
             draw_image(GameWindow, ready, 280, 310);
         }
 

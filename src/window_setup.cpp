@@ -91,7 +91,8 @@ show_image (Image image)
     glEnd ();
 }
 
-V3 getpixel(SDL_Surface *surface, int x, int y)
+static V3
+getpixel(SDL_Surface *surface, int x, int y)
 {
     int bpp = surface->format->BytesPerPixel;
     uint8_t *p = (uint8_t *)surface->pixels + y * surface->pitch + x * bpp;
@@ -195,3 +196,4 @@ play_sound (Mix_Chunk *sound)
 {
   Mix_PlayChannel (-1, sound, 0);
 }
+
