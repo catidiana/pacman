@@ -1,2 +1,2 @@
 # pacman
-Reacreation of Pac-Man classic game - work in progress!
+Early version with immortal pacman and tiles.
