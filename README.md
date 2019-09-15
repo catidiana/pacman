@@ -8,7 +8,7 @@ Make sure you have SDL library installed https://www.libsdl.org/
 <br> To run this program on Windows please install MSYS2 first https://www.msys2.org/
 <br>
 In case of successfull installation run make and start the program with ./pacman
-
+![Screenshot-(98)](https://user-images.githubusercontent.com/50684862/64925988-da904b80-d800-11e9-954d-616fedf801ab.jpg)
 Game rules:
 <br>There are 240 food dots on the field. Level is finished when you eat all dots.
 <br> Use navigation arrows or A-W-D-S to move around.
@@ -16,7 +16,7 @@ Game rules:
 <br>2 times per level special food - fruit appears in the game. It can give you big amount of extra points.
 <br>If ghost catches you, you lose your life. You have 3 lifes per level. If you loose the level, you will go back to Level 1.
 <br>Sometimes ghosts hunt you, sometimes they are just walking around. The higher is level the longer they hunt.
-
+![Screenshot-(99)](https://user-images.githubusercontent.com/50684862/64925996-f1cf3900-d800-11e9-84ba-78946ca5b160.jpg)
 <br>More information about game mechanics:
 <br>The game window is splited of tiles. Ghost catches pacman if their centers are in the same tile.
 <br>The weak place of this logic: if Pacman meets ghost at the edge of tiles, on the next step Pacman can jump to the ghost tile, ang ghost jump to the Pacman tile. That's why you should check tiles twice - after each Pacman step and after each ghost step.
