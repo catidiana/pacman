@@ -1,10 +1,10 @@
 # Recreation of Pac-Man classic game
 <br>For Linux:<br/>
-Make sure you have SDL library https://www.libsdl.org/
+Make sure you have SDL library installed https://www.libsdl.org/
 <br>If you don't have it, use these commands:<br/>
 <br>sudo apt-get install libsdl2-dev
 <br>sudo apt-get install libsdl2-image-dev
-<br>sudo apt-get install libsdl2-mixer-dev
+<br>sudo apt-get install libsdl2-mixer-dev<br/>
 <br> To run this program on Windows please install MSYS2 first https://www.msys2.org/
 <br>
 In case of successfull installation run make and start the program with ./pacman
