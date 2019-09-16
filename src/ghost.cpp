@@ -382,6 +382,7 @@ public:
         case GHOST_FRIGHTENED: {
             ghost_eaten_check(PacMan);
             walk_to_target({35 - PacMan.matr_ceil.y, 27 - PacMan.matr_ceil.x}, 1);
+            define_matr_ceil();
             if (awaiting_state != GHOST_EATEN) ghost_eaten_check(PacMan);
             uint32_t current_time = SDL_GetTicks();
             if (current_time + 2000 < scared_time + scared_interval) draw_image(GameWindow, ghost_fright[(s%8)/4], gh_coord.x, gh_coord.y);
