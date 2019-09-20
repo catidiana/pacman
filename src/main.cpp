@@ -14,16 +14,6 @@
 #include <assert.h>
 #include <time.h>
 
-
-
-enum InputType {
-    INPUT_NONE,
-    INPUT_LEFT,
-    INPUT_RIGHT,
-    INPUT_DOWN,
-    INPUT_UP
-};
-
 uint32_t GAME_SCORE = 0;
 uint32_t LEVEL = 1;
 
@@ -101,9 +91,8 @@ main (int argc, char **argv)
     for (int keep_running = 1; keep_running; )
     {
         uint32_t start_loop = SDL_GetTicks();
-        static uint32_t s = 0;
+        static uint32_t frame = 0;
 
-        InputType input = INPUT_NONE;
 
         for (SDL_Event event; SDL_PollEvent (&event);)
         {
@@ -131,27 +120,18 @@ main (int argc, char **argv)
                 {
                     switch (event.key.keysym.sym)
                     {
-                    case SDLK_w:            input = INPUT_UP; break;
-                    case SDLK_s:            input = INPUT_DOWN; break;
-                    case SDLK_a:            input = INPUT_LEFT; break;
-                    case SDLK_d:            input = INPUT_RIGHT; break;
-                    case SDLK_UP:           input = INPUT_UP; break;
-                    case SDLK_DOWN:         input = INPUT_DOWN; break;
-                    case SDLK_LEFT:         input = INPUT_LEFT; break;
-                    case SDLK_RIGHT:        input = INPUT_RIGHT; break;
+                    case SDLK_w:            PacMan.change_state(PAC_WALK_UP); break;
+                    case SDLK_s:            PacMan.change_state(PAC_WALK_DOWN); break;
+                    case SDLK_a:            PacMan.change_state(PAC_WALK_LEFT); break;
+                    case SDLK_d:            PacMan.change_state(PAC_WALK_RIGHT); break;
+                    case SDLK_UP:           PacMan.change_state(PAC_WALK_UP); break;
+                    case SDLK_DOWN:         PacMan.change_state(PAC_WALK_DOWN); break;
+                    case SDLK_LEFT:         PacMan.change_state(PAC_WALK_LEFT); break;
+                    case SDLK_RIGHT:        PacMan.change_state(PAC_WALK_RIGHT); break;
                     }
                 }
             } break;
             }
-        }
-
-        switch (input)
-        {
-        case INPUT_NONE: break;
-        case INPUT_LEFT: PacMan.change_state(PAC_WALK_LEFT); break;
-        case INPUT_RIGHT: PacMan.change_state(PAC_WALK_RIGHT); break;
-        case INPUT_DOWN: PacMan.change_state(PAC_WALK_DOWN); break;
-        case INPUT_UP: PacMan.change_state(PAC_WALK_UP); break;
         }
 
         glClear (GL_COLOR_BUFFER_BIT);
@@ -169,7 +149,7 @@ main (int argc, char **argv)
             Kimagure.reset_ghost();
         }
 
-        if (s == 1) {
+        if (frame == 1) {
             SDL_Delay(4000);
         }
 
@@ -181,7 +161,7 @@ main (int argc, char **argv)
             Otoboke.reset_ghost();
             Kimagure.reset_ghost();
             if (PacMan.pacman_lifes == 0) {
-                s = 0;
+                frame = 0;
                 PacMan.pacman_lifes = 3;
                 Food.refill_food();
             }
@@ -195,8 +175,8 @@ main (int argc, char **argv)
         draw_integer (GameWindow, digits, 100, 680, GAME_SCORE);
         draw_image(GameWindow, high_score, 490, 700);
 
-        Food.draw_food(GameWindow, s);
-        PacMan.action(GameWindow, s);
+        Food.draw_food(GameWindow, frame);
+        PacMan.action(GameWindow, frame);
         Food.eaten_food(PacMan, GameWindow, digits);
         if (Food.energizer_mode == 1 && LEVEL < 10) {
             dead_bonus_count = 0;
@@ -207,25 +187,16 @@ main (int argc, char **argv)
             Kimagure.awaiting_state = GHOST_FRIGHTENED;
         }
 
-        check_pacman_life (GameWindow, s, PacMan, Oikake, Machibuse, Otoboke, Kimagure);
+        check_pacman_life (GameWindow, frame, PacMan, Oikake, Machibuse, Otoboke, Kimagure);
 
-        Oikake.action(GameWindow, digits, s, PacMan);
-        Machibuse.action(GameWindow, digits, s, PacMan);
-        Otoboke.action(GameWindow, digits, s, PacMan);
+        Oikake.action(GameWindow, digits, frame, PacMan);
+        Machibuse.action(GameWindow, digits, frame, PacMan);
+        Otoboke.action(GameWindow, digits, frame, PacMan);
         Kimagure.update_dependent(Oikake.matr_ceil);
-        Kimagure.action(GameWindow, digits, s, PacMan);
+        Kimagure.action(GameWindow, digits, frame, PacMan);
 
 
-        if (PacMan.state != PAC_DIES) check_pacman_life (GameWindow, s, PacMan, Oikake, Machibuse, Otoboke, Kimagure);
-
-      /*  if ((Oikake.matr_ceil.x == PacMan.matr_ceil.x && Oikake.matr_ceil.y == PacMan.matr_ceil.y && Oikake.state != GHOST_FRIGHTENED && Oikake.state != GHOST_EATEN) ||
-                (Machibuse.matr_ceil.x == PacMan.matr_ceil.x && Machibuse.matr_ceil.y == PacMan.matr_ceil.y && Machibuse.state != GHOST_FRIGHTENED && Machibuse.state != GHOST_EATEN) ||
-                (Otoboke.matr_ceil.x == PacMan.matr_ceil.x && Otoboke.matr_ceil.y == PacMan.matr_ceil.y && Otoboke.state != GHOST_FRIGHTENED && Otoboke.state != GHOST_EATEN) ||
-                (Kimagure.matr_ceil.x == PacMan.matr_ceil.x && Kimagure.matr_ceil.y == PacMan.matr_ceil.y && Kimagure.state != GHOST_FRIGHTENED && Kimagure.state != GHOST_EATEN)) {
-            PacMan.state = PAC_DIES;
-            PacMan.awaiting_state = PAC_NONE;
-            PacMan.action(GameWindow, s);
-        }*/
+        if (PacMan.state != PAC_DIES) check_pacman_life (GameWindow, frame, PacMan, Oikake, Machibuse, Otoboke, Kimagure);
 
         if (PacMan.pacman_lifes == 0)  {
             draw_image(GameWindow, game_over, 280, 310);
@@ -246,14 +217,14 @@ main (int argc, char **argv)
             draw_image(GameWindow, PacMan.pacman_stay, PacMan.pac_coord.x, PacMan.pac_coord.y);
         }
 
-        if (s == 0) {
+        if (frame == 0) {
             play_sound(start);
             FILE *f = fopen("record.txt", "r");
             if (f != NULL) fscanf(f, "%d", &record);
             draw_image(GameWindow, ready, 280, 310);
         }
 
-        ++s;
+        ++frame;
 
         update_image_texture (GameWindow);
         show_image           (GameWindow);
