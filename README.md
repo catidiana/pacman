@@ -6,7 +6,7 @@ Make sure you have SDL library installed https://www.libsdl.org/
 <br>sudo apt-get install libsdl2-image-dev
 <br>sudo apt-get install libsdl2-mixer-dev<br/>
 <br> To run this program on Windows please install MSYS2 first https://www.msys2.org/
-<br> To add SDL library to MSYS2 use these command:
+<br> To add SDL library to MSYS2 use this command:
 <br>pacman -S mingw-w64-x86_64-{SDL2,SDL2_image,SDL2_mixer,pkg-config} make
 <br>
 In case of successfull installation run make and start the program with ./pacman
