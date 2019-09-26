@@ -157,7 +157,7 @@ public:
             break;
         }
     }
-    Ghost_Direction find_awailable_direction() {
+    Ghost_Direction find_available_direction() {
         if (WalkingMatr[matr_ceil.y - 1][matr_ceil.x] > 0 && direction != DIR_DOWN) return DIR_UP;
         if (WalkingMatr[matr_ceil.y][(matr_ceil.x-1)%28] > 0 && direction != DIR_RIGHT) return DIR_LEFT;
         if (WalkingMatr[matr_ceil.y + 1][matr_ceil.x] > 0 && direction != DIR_UP) return DIR_DOWN;
@@ -168,7 +168,7 @@ public:
         if (WalkingMatr[matr_ceil.y][(matr_ceil.x-1)%28] > 0 && PacMan.matr_ceil.x > matr_ceil.x) return DIR_LEFT;
         if (WalkingMatr[matr_ceil.y + 1][matr_ceil.x] > 0 && PacMan.matr_ceil.y > matr_ceil.y) return DIR_DOWN;
         if (WalkingMatr[matr_ceil.y][(matr_ceil.x-1)%28] > 0 && PacMan.matr_ceil.x < matr_ceil.x)return DIR_RIGHT;
-        return find_awailable_direction();
+        return find_available_direction();
     }
     void walk_to_target(V2 matr_target, uint8_t speed = 2) {
         if (gh_coord.x%20 != 10 || gh_coord.y%20 != 10) {
@@ -202,16 +202,16 @@ public:
                 }
             } break;
             }
-            direction = find_awailable_direction();
+            direction = find_available_direction();
             continue_walk(speed);
         } else {
-            bool awailable_ceils[4];
+            bool available_ceils[4];
             int target_distance[4];
             //up - left - down - right;
-            awailable_ceils[0] = WalkingMatr[matr_ceil.y - 1][matr_ceil.x];
-            awailable_ceils[1] = WalkingMatr[matr_ceil.y][(matr_ceil.x-1)%28];
-            awailable_ceils[2] = WalkingMatr[matr_ceil.y + 1][matr_ceil.x];
-            awailable_ceils[3] = WalkingMatr[matr_ceil.y][(matr_ceil.x+1)%28];
+            available_ceils[0] = WalkingMatr[matr_ceil.y - 1][matr_ceil.x];
+            available_ceils[1] = WalkingMatr[matr_ceil.y][(matr_ceil.x-1)%28];
+            available_ceils[2] = WalkingMatr[matr_ceil.y + 1][matr_ceil.x];
+            available_ceils[3] = WalkingMatr[matr_ceil.y][(matr_ceil.x+1)%28];
             int x_dir = (int)matr_ceil.x - (int)matr_target.x;
             int y_dir = (int)matr_ceil.y - (int)matr_target.y;
             target_distance[0] = x_dir*x_dir + (y_dir - 1)*(y_dir - 1);
@@ -219,7 +219,7 @@ public:
             target_distance[2] = x_dir*x_dir +(y_dir + 1)*(y_dir + 1);
             target_distance[3] = (x_dir + 1)*(x_dir + 1) + y_dir*y_dir;
             for (int i = 0; i < 4; i++) {
-                if (awailable_ceils[i] == false) target_distance[i] = 3000;
+                if (available_ceils[i] == false) target_distance[i] = 3000;
             }
             target_distance[(direction + 2)%4] = 3000;
             int selected_direction = DIR_UP;
@@ -275,7 +275,7 @@ public:
                 state = GHOST_SHY;
                 awaiting_state = GHOST_TRANSFER;
             }
-            draw_bonus (GameWindow, bonus_, image_digits, 200*dead_bonus_count);
+            draw_bonus (GameWindow, bonus_, 200*dead_bonus_count);
         }
             break;
         case GHOST_TRANSFER: {
@@ -393,7 +393,7 @@ public:
             walk_to_target({14, 14}, 5);
             bonus = false;
             draw_image(GameWindow, ghost_dead[direction], gh_coord.x, gh_coord.y);
-            draw_bonus (GameWindow, bonus_, image_digits, 200*dead_bonus_count);
+            draw_bonus (GameWindow, bonus_, 200*dead_bonus_count);
         }
             break;
         default:
@@ -533,13 +533,14 @@ public:
 
 
 
-static void check_pacman_life (Image GameWindow, uint32_t s, pacman& PacMan, ghost Oikake, ghost Machibuse, ghost Otoboke, ghost Kimagure)
-{ if ((Oikake.matr_ceil.x == PacMan.matr_ceil.x && Oikake.matr_ceil.y == PacMan.matr_ceil.y && Oikake.state != GHOST_FRIGHTENED && Oikake.state != GHOST_EATEN) ||
-          (Machibuse.matr_ceil.x == PacMan.matr_ceil.x && Machibuse.matr_ceil.y == PacMan.matr_ceil.y && Machibuse.state != GHOST_FRIGHTENED && Machibuse.state != GHOST_EATEN) ||
-          (Otoboke.matr_ceil.x == PacMan.matr_ceil.x && Otoboke.matr_ceil.y == PacMan.matr_ceil.y && Otoboke.state != GHOST_FRIGHTENED && Otoboke.state != GHOST_EATEN) ||
-          (Kimagure.matr_ceil.x == PacMan.matr_ceil.x && Kimagure.matr_ceil.y == PacMan.matr_ceil.y && Kimagure.state != GHOST_FRIGHTENED && Kimagure.state != GHOST_EATEN)) {
+static void check_pacman_life (pacman &PacMan, ghost Oikake, ghost Machibuse, ghost Otoboke, ghost Kimagure)
+{
+  if ((Oikake.matr_ceil.x    == PacMan.matr_ceil.x && Oikake.matr_ceil.y    == PacMan.matr_ceil.y && Oikake.state    != GHOST_FRIGHTENED && Oikake.state    != GHOST_EATEN) ||
+      (Machibuse.matr_ceil.x == PacMan.matr_ceil.x && Machibuse.matr_ceil.y == PacMan.matr_ceil.y && Machibuse.state != GHOST_FRIGHTENED && Machibuse.state != GHOST_EATEN) ||
+      (Otoboke.matr_ceil.x   == PacMan.matr_ceil.x && Otoboke.matr_ceil.y   == PacMan.matr_ceil.y && Otoboke.state   != GHOST_FRIGHTENED && Otoboke.state   != GHOST_EATEN) ||
+      (Kimagure.matr_ceil.x  == PacMan.matr_ceil.x && Kimagure.matr_ceil.y  == PacMan.matr_ceil.y && Kimagure.state  != GHOST_FRIGHTENED && Kimagure.state  != GHOST_EATEN)) {
       PacMan.state = PAC_DIES;
       PacMan.awaiting_state = PAC_NONE;
-      PacMan.action(GameWindow, s);
+      PacMan.action();
   }
 }

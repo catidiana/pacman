@@ -50,7 +50,7 @@ public:
     void draw_food (Image GameWindow, uint32_t s) {
         for (uint32_t y = 0; y < 36; y++) {
             for (uint32_t x = 0; x < 28; x++) {
-                if (FoodMatrix[y][x] == true) {
+                if (FoodMatrix[y][x]) {
                     draw_image(GameWindow, ordinary, x*20+10, (36 - y)*20 - 10);
                 }
             }
@@ -83,15 +83,15 @@ public:
             bonus = true;
         }
     }
-    void show_bonus (Image GameWindow, Image *image_digits) {
+    void show_bonus (Image GameWindow) {
         uint32_t current_time = SDL_GetTicks();
         if (current_time >= fruit_time + 11000) bonus = false;
-        else draw_bonus (GameWindow, bonus_, image_digits, fruit_bonus);
+        else draw_bonus (GameWindow, bonus_, fruit_bonus);
     }
-    void eaten_food(pacman PacMan, Image GameWindow, Image *image_digits) {
+    void eaten_food(pacman PacMan, Image GameWindow) {
         energizer_mode = false;
         if (fruits) eaten_fruit(PacMan);
-        if (bonus) show_bonus (GameWindow, image_digits);
+        if (bonus) show_bonus (GameWindow);
         if(FoodMatrix[PacMan.matr_ceil.y][PacMan.matr_ceil.x]) {
             FoodMatrix[PacMan.matr_ceil.y][PacMan.matr_ceil.x] = false;
             GAME_SCORE += 10;
