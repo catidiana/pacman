@@ -186,10 +186,7 @@ main (int argc, char **argv)
         }
 
         glClear (GL_COLOR_BUFFER_BIT);
-
-
-        // what happens here
-        // Note(Martin): What is this comment above?
+      
         if (Food.food_counter == 0) {
             SDL_Delay(5000);
             LEVEL++;
