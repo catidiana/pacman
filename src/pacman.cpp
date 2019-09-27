@@ -11,36 +11,22 @@ enum Pac_States {
 class pacman
 {
 private:
-    Image pacman_go_left[2];
-    Image pacman_go_right[2];
-    Image pacman_go_down[2];
-    Image pacman_go_up[2];
-    Image pacman_lifes_count[2];
-    Sound dead_pac;
+    Image pacman_image;
+    Sound dead_sound;
 public:
     Image pacman_stay;
     V2 pac_coord;
     V2 matr_ceil;
     Pac_States state;
     Pac_States awaiting_state;
-    uint8_t pacman_lifes;
+    uint8_t pacman_lives;
 
 
     pacman() {
-        pacman_stay           = load_image("res/pacman.png");
-        pacman_go_left[0]     = load_image("res/pacman_45_left.png");
-        pacman_go_left[1]     = load_image("res/pacman_90_left.png");
-        pacman_go_right[0]    = load_image("res/pacman_45_right.png");
-        pacman_go_right[1]    = load_image("res/pacman_90_right.png");
-        pacman_go_down[0]     = load_image("res/pacman_45_down.png");
-        pacman_go_down[1]     = load_image("res/pacman_90_down.png");
-        pacman_go_up[0]       = load_image("res/pacman_45_up.png");
-        pacman_go_up[1]       = load_image("res/pacman_90_up.png");
-        pacman_lifes_count[1] = load_image("res/lifes_2.png");
-        pacman_lifes_count[0] = load_image("res/lifes_1.png");
-        dead_pac              = load_sound("sound/death.wav");
+        pacman_image = load_image("res/pacman.png");
+        dead_sound = load_sound("sound/death.wav");
         reset_pacman();
-        pacman_lifes = 3;
+        pacman_lives = 3;
     }
     void reset_pacman () {
         pac_coord = {280, 190};
@@ -106,8 +92,8 @@ public:
             else {pac_coord.y += 2;}
         } break;
         case PAC_DIES:
-            --pacman_lifes;
-            play_sound(dead_pac);
+            --pacman_lives;
+            play_sound(dead_sound);
             break;
         case PAC_STAY:
         case PAC_NONE: break;
@@ -118,15 +104,17 @@ public:
 
     void draw (Image GameWindow, uint32_t frame) {
         switch (state) {
-        case PAC_STAY:       draw_image (GameWindow, pacman_stay                 , pac_coord.x, pac_coord.y); break;
-        case PAC_WALK_LEFT:  draw_image (GameWindow, pacman_go_left [(frame%8)/4], pac_coord.x, pac_coord.y); break;
-        case PAC_WALK_RIGHT: draw_image (GameWindow, pacman_go_right[(frame%8)/4], pac_coord.x, pac_coord.y); break;
-        case PAC_WALK_DOWN:  draw_image (GameWindow, pacman_go_down [(frame%8)/4], pac_coord.x, pac_coord.y); break;
-        case PAC_WALK_UP:    draw_image (GameWindow, pacman_go_up   [(frame%8)/4], pac_coord.x, pac_coord.y); break;
+        case PAC_STAY:       draw_image (GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 0*32, 0); break;
+        case PAC_WALK_LEFT:  draw_image (GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 1*32, (frame%8/4) * 32); break;
+        case PAC_WALK_RIGHT: draw_image (GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 2*32, (frame%8/4) * 32); break;
+        case PAC_WALK_DOWN:  draw_image (GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 3*32, (frame%8/4) * 32); break;
+        case PAC_WALK_UP:    draw_image (GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 4*32, (frame%8/4) * 32); break;
         case PAC_DIES:
         case PAC_NONE: break;
         }
 
-        if (pacman_lifes > 1) draw_image(GameWindow, pacman_lifes_count[pacman_lifes - 2], 40, 20);
+        for (int i = 0; i < pacman_lives - 1; ++i) {
+            draw_image (GameWindow, pacman_image, 20 + 40 * i, 20, 32, 32, 2*32, 32);
+        }
     }
 };

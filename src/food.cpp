@@ -14,7 +14,6 @@ private:
     Image ordinary;
     Image energizer[2];
     Image fruit;
-    Image bonus_;
     Sound chomp;
     Sound fruit_b;
     uint32_t fruit_time;
@@ -28,7 +27,6 @@ public:
         energizer[0] = load_image("res/energizer.png");
         energizer[1] = load_image("res/energizer_s.png");
         fruit = load_image("res/cherry.png");
-        bonus_ = load_image("res/bonus.png");
         chomp = load_sound("sound/food.wav");
         fruit_b = load_sound("sound/bonus.wav");
         refill_food();
@@ -86,7 +84,7 @@ public:
     void show_bonus (Image GameWindow) {
         uint32_t current_time = SDL_GetTicks();
         if (current_time >= fruit_time + 11000) bonus = false;
-        else draw_bonus (GameWindow, bonus_, fruit_bonus);
+        else draw_bonus (GameWindow, fruit_bonus);
     }
     void eaten_food(pacman PacMan, Image GameWindow) {
         energizer_mode = false;

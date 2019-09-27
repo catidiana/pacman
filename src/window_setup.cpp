@@ -126,20 +126,37 @@ load_image (const char *filename)
 
 
 static void
-draw_image (Image image_des, Image image_src, uint32_t x_center, uint32_t y_center)
+draw_image (Image des, Image src, u32 x_center, u32 y_center, u32 w, u32 h, u32 x_offset, u32 y_offset)
 {
-    uint32_t x_start = x_center - image_src.w/2;
-    uint32_t y_start = y_center - image_src.h/2;
-    for (uint32_t y = 0; y < image_src.h; y++)
+    u32 x_start = x_center - w / 2;
+    u32 y_start = y_center - h / 2;
+    u32 src_y = h - 1 + y_offset;
+    u32 des_y = y_start;
+
+    for (u32 y = 0; y < h; y++)
     {
-        for (uint32_t x = 0; x < image_src.w; x++)
+        u32 src_x = x_offset;
+        u32 des_x = x_start;
+        for (u32 x = 0; x < w; x++)
         {
-            if(image_src.pixels[(image_src.h - y -1)*image_src.w + x].r != 255 ||
-                    image_src.pixels[(image_src.h - y -1)*image_src.w + x].g != 255 ||
-                    image_src.pixels[(image_src.h - y -1)*image_src.w + x].b != 255)
-                image_des.pixels[(y+y_start)*image_des.w + x + x_start] = image_src.pixels[(image_src.h - y -1)*image_src.w + x];
+            V3 pix = src.pixels[src_y * src.w + src_x];
+            if (pix.r != 255 || pix.g != 255 || pix.b != 255)
+            {
+               des.pixels[des_y * des.w + des_x] = pix;
+            }
+            ++src_x;
+            ++des_x;
         }
+        --src_y;
+        ++des_y;
     }
+}
+
+
+static void
+draw_image (Image des, Image src, u32 x_center, u32 y_center)
+{
+  draw_image (des, src, x_center, y_center, src.w, src.h, 0, 0);
 }
 
 
@@ -174,4 +191,3 @@ play_sound (Mix_Chunk *sound)
 {
   Mix_PlayChannel (-1, sound, 0);
 }
-

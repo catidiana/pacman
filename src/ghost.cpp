@@ -30,7 +30,6 @@ protected:
     Ghost_Type type;
     Image ghost_fright[4];
     Image ghost_dead[4];
-    Image bonus_;
     Sound ghost_b;
     int shy_time;
     uint32_t start_time;
@@ -53,7 +52,6 @@ public:
 
     ghost (Ghost_Type type_, V2 target_, V2 res_coord_) : type(type_), walk_target_ceil(target_), reset_coord(res_coord_) {
         reset_ghost();
-        bonus_ = load_image("res/bonus.png");
         ghost_b = load_sound("sound/bonus.wav");
 
         ghost_fright[0]  = load_image("res/ghost_fr_1.png");
@@ -261,7 +259,7 @@ public:
             }
         }
     }
-    void calculating_path(Image GameWindow, Image* image_digits, uint32_t s, pacman PacMan) {
+    void calculating_path(Image GameWindow, uint32_t s, pacman PacMan) {
         switch (awaiting_state) {
 
         case GHOST_SHY: {
@@ -275,7 +273,7 @@ public:
                 state = GHOST_SHY;
                 awaiting_state = GHOST_TRANSFER;
             }
-            draw_bonus (GameWindow, bonus_, 200*dead_bonus_count);
+            draw_bonus (GameWindow, 200 * dead_bonus_count);
         }
             break;
         case GHOST_TRANSFER: {
@@ -392,16 +390,16 @@ public:
         case GHOST_EATEN: {
             walk_to_target({14, 14}, 5);
             bonus = false;
-            draw_image(GameWindow, ghost_dead[direction], gh_coord.x, gh_coord.y);
-            draw_bonus (GameWindow, bonus_, 200*dead_bonus_count);
+            draw_image (GameWindow, ghost_dead[direction], gh_coord.x, gh_coord.y);
+            draw_bonus (GameWindow, 200 * dead_bonus_count);
         }
             break;
         default:
             break;
         }
     }
-    void action (Image GameWindow, Image* image_digits, uint32_t s, pacman PacMan) {
-        calculating_path(GameWindow, image_digits, s, PacMan);
+    void action (Image GameWindow, uint32_t s, pacman PacMan) {
+        calculating_path(GameWindow, s, PacMan);
         define_matr_ceil();
         draw_avatar (GameWindow, s);
     }

@@ -13,8 +13,10 @@
 #include <assert.h>
 #include <time.h>
 
-uint32_t GAME_SCORE = 0;
-uint32_t LEVEL = 1;
+typedef uint32_t u32;
+
+u32 GAME_SCORE = 0;
+u32 LEVEL = 1;
 
 #include "window_setup.cpp"
 
@@ -24,43 +26,75 @@ struct Assets {
   Sound win_sound;
 
   Image background_image;
-  Image level_image;
-  Image high_score_image;
   Image ready_image;
   Image you_win_image;
   Image game_over_image;
   Image pac_dies_image;
   Image cherries_image;
-  Image digits_image[10];
+  Image font_image;
 } assets;
 
 
 static void
-draw_integer (Image image_des, Image *image_digits, uint32_t x_right_corner, uint32_t y_center, uint32_t number)
+draw_text (Image des, Image font, uint32_t x, uint32_t y, const char *text)
 {
-    if (number == 0)     draw_image (image_des, image_digits[0], x_right_corner - 7, y_center);
-    uint32_t i = 0;
-        while (number>0)
+  uint32_t glyph_w = 14;
+  uint32_t glyph_h = font.h;
+
+  for (char c = text[0]; c; c = (++text)[0])
+    {
+      if (c >= 'A' && c <= 'Z')
         {
-            uint32_t digit = number%10;
-            number = number/10;
-            //integer pic size is 14*20
-            draw_image (image_des, image_digits[digit], x_right_corner - 7 - i, y_center);
-            i += 14;
+          c = c - 'A' + 10;
+          draw_image (des, font, x, y, glyph_w, glyph_h, c * glyph_w, 0);
         }
+      else if (c >= '0' && c <= '9')
+        {
+          c = c - '0';
+          draw_image (des, font, x, y, glyph_w, glyph_h, c * glyph_w, 0);
+        }
+
+      x += glyph_w;
+    }
 }
 
-void draw_bonus (Image image_des, Image bonus_image, uint32_t number) {
-    draw_image   (image_des, bonus_image, 520, 20);
-    draw_integer (image_des, assets.digits_image, 480, 20, number);
+
+static void
+draw_integer (Image des, Image font, uint32_t x_right_corner, uint32_t y_center, uint32_t number)
+{
+    uint32_t glyph_w = 14;
+    uint32_t glyph_h = font.h;
+    uint32_t x = x_right_corner - glyph_w / 2;
+    uint32_t y = y_center;
+
+    if (number == 0)
+    {
+      draw_image (des, font, x, y, glyph_w, glyph_h, 0, 0);
+    }
+    else
+    {
+        do
+        {
+            uint32_t digit = number % 10;
+            number /= 10;
+            draw_image (des, font, x, y, glyph_w, glyph_h, digit * glyph_w, 0);
+            x -= glyph_w;
+        }
+        while (number);
+    }
 }
+
+
+void draw_bonus (Image image_des, uint32_t number) {
+    draw_text    (image_des, assets.font_image, 493, 20, "BONUS");
+    draw_integer (image_des, assets.font_image, 480, 20, number);
+}
+
 
 #include "walking_rules.cpp"
 #include "pacman.cpp"
 #include "food.cpp"
 #include "ghost.cpp"
-
-
 
 
 int
@@ -113,18 +147,11 @@ main (int argc, char **argv)
     printf ("Load images...");
 
     assets.background_image = load_image("res/background.png");
-    assets.level_image      = load_image("res/level.png");
-    assets.high_score_image = load_image("res/high_score.png");
     assets.ready_image      = load_image("res/ready.png");
     assets.you_win_image    = load_image("res/you_win.png");
     assets.game_over_image  = load_image("res/game_over.png");
     assets.pac_dies_image   = load_image("res/pac_die.png");
-
-    for (int i = 0; i < 10; i++) {
-        char digit_filepath[32];
-        snprintf (digit_filepath, sizeof (digit_filepath), "res/%d.png", i);
-        assets.digits_image[i] = load_image (digit_filepath);
-    }
+    assets.font_image       = load_image("res/font.png");
 
     pacman PacMan;
     food Food;
@@ -193,7 +220,7 @@ main (int argc, char **argv)
         if (Food.food_counter == 0) {
             SDL_Delay(5000);
             LEVEL++;
-            PacMan.pacman_lifes = 3;
+            PacMan.pacman_lives = 3;
             PacMan.reset_pacman();
             Food.refill_food();
             Oikake.reset_ghost();
@@ -213,19 +240,19 @@ main (int argc, char **argv)
             Machibuse.reset_ghost();
             Otoboke.reset_ghost();
             Kimagure.reset_ghost();
-            if (PacMan.pacman_lifes == 0) {
+            if (PacMan.pacman_lives == 0) {
                 frame = 0;
-                PacMan.pacman_lifes = 3;
+                PacMan.pacman_lives = 3;
                 Food.refill_food();
             }
         }
 
-        draw_image (GameWindow, assets.background_image, MAIN_WINDOW_INIT_WIDTH/2, MAIN_WINDOW_INIT_HEIGHT/2);
-        draw_image (GameWindow, assets.level_image, 40, 700);
-        draw_integer (GameWindow, assets.digits_image, 100, 700, LEVEL);
-        draw_integer (GameWindow, assets.digits_image, 556, 680, record);
-        draw_integer (GameWindow, assets.digits_image, 100, 680, GAME_SCORE);
-        draw_image(GameWindow, assets.high_score_image, 490, 700);
+        draw_image   (GameWindow, assets.background_image, MAIN_WINDOW_INIT_WIDTH/2, MAIN_WINDOW_INIT_HEIGHT/2);
+        draw_text    (GameWindow, assets.font_image,  11, 700, "LEVEL");
+        draw_integer (GameWindow, assets.font_image, 100, 700, LEVEL);
+        draw_integer (GameWindow, assets.font_image, 556, 680, record);
+        draw_integer (GameWindow, assets.font_image, 100, 680, GAME_SCORE);
+        draw_text    (GameWindow, assets.font_image, 423, 700, "HIGH SCORE");
 
         Food.draw_food(GameWindow, frame);
         PacMan.action();
@@ -241,15 +268,15 @@ main (int argc, char **argv)
 
         check_pacman_life (PacMan, Oikake, Machibuse, Otoboke, Kimagure);
 
-        Oikake.action   (GameWindow, assets.digits_image, frame, PacMan);
-        Machibuse.action(GameWindow, assets.digits_image, frame, PacMan);
-        Otoboke.action  (GameWindow, assets.digits_image, frame, PacMan);
+        Oikake.action   (GameWindow, frame, PacMan);
+        Machibuse.action(GameWindow, frame, PacMan);
+        Otoboke.action  (GameWindow, frame, PacMan);
         Kimagure.update_dependent(Oikake.matr_ceil);
-        Kimagure.action (GameWindow, assets.digits_image, frame, PacMan);
+        Kimagure.action (GameWindow, frame, PacMan);
 
         if (PacMan.state != PAC_DIES) check_pacman_life (PacMan, Oikake, Machibuse, Otoboke, Kimagure);
 
-        if (PacMan.pacman_lifes == 0)  {
+        if (PacMan.pacman_lives == 0)  {
             draw_image(GameWindow, assets.game_over_image, 280, 310);
             draw_image(GameWindow, assets.pac_dies_image, PacMan.pac_coord.x, PacMan.pac_coord.y);
             if (GAME_SCORE > record) {
