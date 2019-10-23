@@ -307,7 +307,6 @@ main (int argc, char **argv)
         if (Food.food_counter == 0) {
             draw_image(GameWindow, assets.you_win_image, MAIN_WINDOW_INIT_WIDTH/2, MAIN_WINDOW_INIT_HEIGHT/2);
             play_sound(assets.win_sound);
-            draw_image(GameWindow, PacMan.pacman_stay, PacMan.pac_coord.x, PacMan.pac_coord.y);
         }
 
         if (frame == 0) {
