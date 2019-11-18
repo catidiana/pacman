@@ -263,11 +263,11 @@ main (int argc, char **argv)
         }
 
         draw_image   (GameWindow, assets.background_image, MAIN_WINDOW_INIT_WIDTH/2, MAIN_WINDOW_INIT_HEIGHT/2);
-        draw_text    (GameWindow, assets.font_image,  11, 700, "단계");
+        draw_text    (GameWindow, assets.font_image,  11, 700, "LEVEL");
         draw_integer (GameWindow, assets.font_image, 100, 700, LEVEL);
         draw_integer (GameWindow, assets.font_image, 556, 680, record);
         draw_integer (GameWindow, assets.font_image, 100, 680, GAME_SCORE);
-        draw_text    (GameWindow, assets.font_image, 423, 700, "최고 점수");
+        draw_text    (GameWindow, assets.font_image, 423, 700, "HIGH SCORE");
 
         Food.draw_food(GameWindow, frame);
         PacMan.action();
