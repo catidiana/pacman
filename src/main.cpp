@@ -118,16 +118,16 @@ void draw_bonus (Image image_des, uint32_t number) {
 int
 main (int argc, char **argv)
 {
-    printf ("Setup Game...");
+    printf ("게임 로딩 중...");
     if (SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
     {
-        fprintf (stderr, "SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+        fprintf (stderr, "SDL을 불러오지 못했습니다. SDL 에러: %s\n", SDL_GetError());
         return 1;
     }
 
     if (Mix_OpenAudio (44100, AUDIO_S16SYS, 2, 1024) < 0)
     {
-        fprintf (stderr, "Error: Initializing SDL_mixer: %s\n", Mix_GetError ());
+        fprintf (stderr, "에러: SDL_mixer: %s\n", Mix_GetError ());
         return 1;
     }
 
@@ -140,8 +140,8 @@ main (int argc, char **argv)
 
     set_window_transform (MAIN_WINDOW_INIT_WIDTH, MAIN_WINDOW_INIT_HEIGHT);
 
-    printf ("success.\n");
-    printf ("Create Game Window...");
+    printf ("성공.\n");
+    printf ("게임 창 생성...");
 
     glEnable (GL_TEXTURE_2D);
     glClearColor (0.20, 0.25, 0.30, 1.0);
@@ -154,15 +154,15 @@ main (int argc, char **argv)
     Image GameWindow = new_image (window_w, window_h);
     uniform_fill(GameWindow, {0, 0, 240});
 
-    printf ("success.\n");
-    printf ("Load sounds...");
+    printf ("성공.\n");
+    printf ("음악 불러오기...");
 
     assets.scared_sound = load_sound("sound/scared.wav");
     assets.start_sound  = load_sound("sound/start.wav");
     assets.win_sound    = load_sound("sound/win.wav");
 
-    printf ("success.\n");
-    printf ("Load images...");
+    printf ("성공.\n");
+    printf ("이미지 불러오기...");
 
     assets.background_image = load_image("res/background.png");
     assets.ready_image      = load_image("res/ready.png");
@@ -178,8 +178,8 @@ main (int argc, char **argv)
     ghost_orange Otoboke;
     ghost_cyan Kimagure;
 
-    printf ("success.\n");
-    printf ("Start the main loop.\n");
+    printf ("성공.\n");
+    printf ("main loop 시작.\n");
 
     for (int keep_running = 1; keep_running; )
     {
@@ -263,11 +263,11 @@ main (int argc, char **argv)
         }
 
         draw_image   (GameWindow, assets.background_image, MAIN_WINDOW_INIT_WIDTH/2, MAIN_WINDOW_INIT_HEIGHT/2);
-        draw_text    (GameWindow, assets.font_image,  11, 700, "LEVEL");
+        draw_text    (GameWindow, assets.font_image,  11, 700, "단계");
         draw_integer (GameWindow, assets.font_image, 100, 700, LEVEL);
         draw_integer (GameWindow, assets.font_image, 556, 680, record);
         draw_integer (GameWindow, assets.font_image, 100, 680, GAME_SCORE);
-        draw_text    (GameWindow, assets.font_image, 423, 700, "HIGH SCORE");
+        draw_text    (GameWindow, assets.font_image, 423, 700, "최고 점수");
 
         Food.draw_food(GameWindow, frame);
         PacMan.action();
