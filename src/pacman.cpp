@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 enum Pac_States {
     PAC_NONE,
     PAC_STAY,
@@ -30,18 +29,22 @@ class pacman
 {
 private:
     Image pacman_image;
+	Image hellpacman_image;
     Sound dead_sound;
 public:
     Image pacman_stay;
     V2 pac_coord;
     V2 matr_ceil;
+	int hellmode = 0;
     Pac_States state;
     Pac_States awaiting_state;
     uint8_t pacman_lives;
 
 
     pacman() {
+		
         pacman_image = load_image("res/pacman.png");
+		hellpacman_image = load_image("res/hellpacman.png");
         dead_sound = load_sound("sound/death.wav");
         reset_pacman();
         pacman_lives = 3;
@@ -121,18 +124,39 @@ public:
     }
 
     void draw (Image GameWindow, uint32_t frame) {
-        switch (state) {
-        case PAC_STAY:       draw_image (GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 0*32, 0); break;
-        case PAC_WALK_LEFT:  draw_image (GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 1*32, (frame%8/4) * 32); break;
-        case PAC_WALK_RIGHT: draw_image (GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 2*32, (frame%8/4) * 32); break;
-        case PAC_WALK_DOWN:  draw_image (GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 3*32, (frame%8/4) * 32); break;
-        case PAC_WALK_UP:    draw_image (GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 4*32, (frame%8/4) * 32); break;
-        case PAC_DIES:
-        case PAC_NONE: break;
-        }
+		
+		
+			switch (state) {
+			case PAC_STAY:       draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 0 * 32, 0); break;
+			case PAC_WALK_LEFT:  draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 1 * 32, (frame % 8 / 4) * 32); break;
+			case PAC_WALK_RIGHT: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 2 * 32, (frame % 8 / 4) * 32); break;
+			case PAC_WALK_DOWN:  draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 3 * 32, (frame % 8 / 4) * 32); break;
+			case PAC_WALK_UP:    draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 4 * 32, (frame % 8 / 4) * 32); break;
+			case PAC_DIES:
+			case PAC_NONE: break;
+			}
+		
+		
 
         for (int i = 0; i < pacman_lives - 1; ++i) {
             draw_image (GameWindow, pacman_image, 20 + 40 * i, 20, 32, 32, 2*32, 32);
         }
     }
+
+	void helldraw (Image GameWindow, uint32_t frame) {
+
+		switch (state) {
+		case PAC_STAY:       draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 0 * 32, 0); break;
+		case PAC_WALK_LEFT:  draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 1 * 32, (frame % 8 / 4) * 32); break;
+		case PAC_WALK_RIGHT: draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 2 * 32, (frame % 8 / 4) * 32); break;
+		case PAC_WALK_DOWN:  draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 3 * 32, (frame % 8 / 4) * 32); break;
+		case PAC_WALK_UP:    draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 4 * 32, (frame % 8 / 4) * 32); break;
+		case PAC_DIES:
+		case PAC_NONE: break;
+		}
+
+		for (int i = 0; i < pacman_lives - 1; ++i) {
+			draw_image(GameWindow, pacman_image, 20 + 40 * i, 20, 32, 32, 2 * 32, 32);
+		}
+	}
 };
