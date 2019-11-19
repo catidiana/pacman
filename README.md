@@ -12,8 +12,8 @@ Make sure you have SDL library installed https://www.libsdl.org/
 ![Screenshot-(98)](https://user-images.githubusercontent.com/50684862/64925988-da904b80-d800-11e9-954d-616fedf801ab.jpg)
 <br>Game rules:
 <br>There are 240 food dots on the field. Level is finished when you eat all dots.
-<br> Use navigation arrows or A-W-D-S to move around.
-<br>There are 4 special food dots called energizers - when you eat them, ghost becomes frightened and you can eat ghost and get extra points.
+<br> Use arrow keys or A-W-D-S to move around.
+<br>There are 4 special food dots called energizers. When Pacman eats them, ghost becomes frightened and you can eat ghost and get extra points.
 <br>2 times per level special food "fruit" appears in the game. It can give you big amount of extra points.
 <br>If a ghost catches you, you lose your life. You have 3 lifes per level. If you loose the level, you will go back to the Level 1.
 <br>Sometimes ghosts hunt you, sometimes they are just walking around. The higher is level the longer they hunt.
