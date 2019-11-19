@@ -232,6 +232,7 @@ main (int argc, char **argv)
 
         glClear (GL_COLOR_BUFFER_BIT);
       
+
         if (Food.food_counter == 0) {
             SDL_Delay(5000);
             LEVEL++;
@@ -279,6 +280,11 @@ main (int argc, char **argv)
             Machibuse.awaiting_state = GHOST_FRIGHTENED;
             Otoboke.awaiting_state   = GHOST_FRIGHTENED;
             Kimagure.awaiting_state  = GHOST_FRIGHTENED;
+			PacMan.hellmode++;
+			Oikake.count++;
+			Machibuse.count++;
+			Otoboke.count++;
+			Kimagure.count++;
         }
 
         check_pacman_life (PacMan, Oikake, Machibuse, Otoboke, Kimagure);
@@ -289,7 +295,7 @@ main (int argc, char **argv)
         Kimagure.update_dependent(Oikake.matr_ceil);
         Kimagure.action (GameWindow, frame, PacMan);
 
-        if (PacMan.state != PAC_DIES) check_pacman_life (PacMan, Oikake, Machibuse, Otoboke, Kimagure);
+        
 
         if (PacMan.pacman_lives == 0)  {
             draw_image(GameWindow, assets.game_over_image, 280, 310);
@@ -304,9 +310,10 @@ main (int argc, char **argv)
         }
 
 
-        if (Food.food_counter == 0) {
+       if (Food.food_counter == 0) {
             draw_image(GameWindow, assets.you_win_image, MAIN_WINDOW_INIT_WIDTH/2, MAIN_WINDOW_INIT_HEIGHT/2);
             play_sound(assets.win_sound);
+          //  draw_image(GameWindow, PacMan.pacman_stay, PacMan.pac_coord.x, PacMan.pac_coord.y);
         }
 
         if (frame == 0) {
@@ -316,7 +323,14 @@ main (int argc, char **argv)
 
         ++frame;
 
-        PacMan.draw (GameWindow, frame);
+		if (Oikake.count == 0&&(Otoboke.count == 0)&&(Machibuse.count == 0)&&(Kimagure.count == 0)) {
+			PacMan.draw(GameWindow, frame);			
+		}
+		else
+		{
+			PacMan.helldraw(GameWindow, frame);
+		}
+
         update_image_texture (GameWindow);
         show_image           (GameWindow);
 
