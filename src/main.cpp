@@ -280,12 +280,12 @@ main (int argc, char **argv)
             Machibuse.awaiting_state = GHOST_FRIGHTENED;
             Otoboke.awaiting_state   = GHOST_FRIGHTENED;
             Kimagure.awaiting_state  = GHOST_FRIGHTENED;
-			PacMan.hellmode++;
-			Oikake.count++;
-			Machibuse.count++;
-			Otoboke.count++;
-			Kimagure.count++;
-        }
+            PacMan.hellmode++;
+            Oikake.count++;
+            Machibuse.count++;
+            Otoboke.count++;
+            Kimagure.count++;
+            }
 
         check_pacman_life (PacMan, Oikake, Machibuse, Otoboke, Kimagure);
 
@@ -323,13 +323,13 @@ main (int argc, char **argv)
 
         ++frame;
 
-		if (Oikake.count == 0&&(Otoboke.count == 0)&&(Machibuse.count == 0)&&(Kimagure.count == 0)) {
-			PacMan.draw(GameWindow, frame);			
-		}
-		else
-		{
-			PacMan.helldraw(GameWindow, frame);
-		}
+        if (Oikake.count == 0&&(Otoboke.count == 0)&&(Machibuse.count == 0)&&(Kimagure.count == 0)) {
+          PacMan.draw(GameWindow, frame);			
+        }
+        else
+        {
+          PacMan.helldraw(GameWindow, frame);
+        }
 
         update_image_texture (GameWindow);
         show_image           (GameWindow);
