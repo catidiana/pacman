@@ -42,7 +42,6 @@ public:
 
 
     pacman() {
-		
         pacman_image = load_image("res/pacman.png");
         hellpacman_image = load_image("res/hellpacman.png");
         dead_sound = load_sound("sound/death.wav");
@@ -124,7 +123,7 @@ public:
     }
 
     void draw (Image GameWindow, uint32_t frame) {
-	    switch (state) {
+        switch (state) {
                    case PAC_STAY: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 0 * 32, 0); break;
                    case PAC_WALK_LEFT: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 1 * 32, (frame % 8 / 4) * 32); break;
                    case PAC_WALK_RIGHT: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 2 * 32, (frame % 8 / 4) * 32); break;
@@ -141,8 +140,8 @@ public:
         }
     }
 
-	void helldraw (Image GameWindow, uint32_t frame) {
-                   switch (state) {
+    void helldraw (Image GameWindow, uint32_t frame) {
+        switch (state) {
                    case PAC_STAY:       draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 0 * 32, 0); break;
                    case PAC_WALK_LEFT:  draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 1 * 32, (frame % 8 / 4) * 32); break;
                    case PAC_WALK_RIGHT: draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 2 * 32, (frame % 8 / 4) * 32); break;
