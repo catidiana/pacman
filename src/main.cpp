@@ -297,7 +297,7 @@ main (int argc, char **argv)
 
         
 
-        if (PacMan.pacman_lives == 0)  {
+        if (PacMan.pacman_lives == 0) {
             draw_image(GameWindow, assets.game_over_image, 280, 310);
             draw_image(GameWindow, assets.pac_dies_image, PacMan.pac_coord.x, PacMan.pac_coord.y);
             if (GAME_SCORE > record) {
@@ -317,18 +317,18 @@ main (int argc, char **argv)
         }
 
         if (frame == 0) {
-          play_sound (assets.start_sound);
-          draw_image (GameWindow, assets.ready_image, 280, 310);
+            play_sound (assets.start_sound);
+            draw_image (GameWindow, assets.ready_image, 280, 310);
         }
 
         ++frame;
 
         if (Oikake.count == 0&&(Otoboke.count == 0)&&(Machibuse.count == 0)&&(Kimagure.count == 0)) {
-          PacMan.draw(GameWindow, frame);			
+            PacMan.draw(GameWindow, frame);			
         }
         else
         {
-          PacMan.helldraw(GameWindow, frame);
+            PacMan.helldraw(GameWindow, frame);
         }
 
         update_image_texture (GameWindow);
