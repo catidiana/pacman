@@ -29,13 +29,13 @@ class pacman
 {
 private:
     Image pacman_image;
-	Image hellpacman_image;
+    Image hellpacman_image;
     Sound dead_sound;
 public:
     Image pacman_stay;
     V2 pac_coord;
     V2 matr_ceil;
-	int hellmode = 0;
+    int hellmode = 0;
     Pac_States state;
     Pac_States awaiting_state;
     uint8_t pacman_lives;
@@ -44,7 +44,7 @@ public:
     pacman() {
 		
         pacman_image = load_image("res/pacman.png");
-		hellpacman_image = load_image("res/hellpacman.png");
+        hellpacman_image = load_image("res/hellpacman.png");
         dead_sound = load_sound("sound/death.wav");
         reset_pacman();
         pacman_lives = 3;
