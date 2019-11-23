@@ -90,12 +90,10 @@ public:
         define_matr_ceil();
         bonus = false;
         for (int i = 0; i < 4; i++) {
-            walking_time[i] = 100;
+             walking_time[i] = 100;
             if (i > 2) walking_time[i] -= 50;
-           
-							 if (LEVEL < 5) walking_time[i] -=50*LEVEL;
-
-            hunting_time[i] = 15000 + LEVEL*5000;
+             if (LEVEL < 5) walking_time[i] -=50*LEVEL;
+             hunting_time[i] = 15000 + LEVEL*5000;
         }
         if (type == OIKAKE_RED) {
             state = GHOST_TRANSFER;
@@ -444,8 +442,8 @@ public:
         int count = 0;
     void draw_avatar (Image GameWindow, uint32_t s) override {
         if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
-        count = 0;
-        draw_image(GameWindow, ghost_red_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
+            count = 0;
+            draw_image(GameWindow, ghost_red_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
         }
     }
 };
@@ -485,8 +483,8 @@ public:
     }
     void draw_avatar (Image GameWindow, uint32_t s) override {
         if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
-        count = 0;
-        draw_image(GameWindow, ghost_pink_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
+            count = 0;
+            draw_image(GameWindow, ghost_pink_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
         }
     }
 };
@@ -516,8 +514,8 @@ public:
     }
     void draw_avatar (Image GameWindow, uint32_t s) override {
         if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
-        count = 0;
-        draw_image(GameWindow, ghost_orange_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
+            count = 0;
+            draw_image(GameWindow, ghost_orange_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
         }
     }
 };
@@ -559,8 +557,8 @@ public:
 
     void draw_avatar (Image GameWindow, uint32_t s) override {
         if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
-        count = 0;
-        draw_image(GameWindow, ghost_cyan_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
+            count = 0;
+            draw_image(GameWindow, ghost_cyan_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
         }
     }
     void update_dependent (V2 new_dep) {
