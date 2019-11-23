@@ -441,12 +441,12 @@ public:
         ghost_red_mask[3][0]  = load_image("res/ghost_red_right_1.png");
         ghost_red_mask[3][1]  = load_image("res/ghost_red_right_2.png");
     }
-	int count = 0;
+        int count = 0;
     void draw_avatar (Image GameWindow, uint32_t s) override {
-		if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
-			count = 0;
-			draw_image(GameWindow, ghost_red_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
-		}
+        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
+        count = 0;
+        draw_image(GameWindow, ghost_red_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
+        }
     }
 };
 
@@ -468,7 +468,7 @@ public:
         ghost_pink_mask[3][1]  = load_image("res/ghost_pink_right_2.png");
 
     }
-	int count = 0;
+        int count = 0;
     void hunt (pacman PacMan) override {
         switch (PacMan.state) {
         case PAC_WALK_UP: walk_to_target({PacMan.matr_ceil.y - 4, PacMan.matr_ceil.x});
@@ -484,10 +484,10 @@ public:
         }
     }
     void draw_avatar (Image GameWindow, uint32_t s) override {
-		if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
-			count = 0;
-			draw_image(GameWindow, ghost_pink_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
-		}
+        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
+        count = 0;
+        draw_image(GameWindow, ghost_pink_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
+        }
     }
 };
 
@@ -509,16 +509,16 @@ public:
         ghost_orange_mask[3][0]  = load_image("res/ghost_orange_right_1.png");
         ghost_orange_mask[3][1]  = load_image("res/ghost_orange_right_2.png");
     }
-	int count = 0;
+        int count = 0;
     void hunt (pacman PacMan) override {
         if (abs((int)PacMan.matr_ceil.x - (int)matr_ceil.x) > 8 && abs((int)PacMan.matr_ceil.y - (int)matr_ceil.y) > 8) walk_to_target(walk_target_ceil);
         else walk_to_target(PacMan.matr_ceil);
     }
     void draw_avatar (Image GameWindow, uint32_t s) override {
-		if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
-			count = 0;
-			draw_image(GameWindow, ghost_orange_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
-		}
+        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
+        count = 0;
+        draw_image(GameWindow, ghost_orange_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
+        }
     }
 };
 
@@ -555,13 +555,13 @@ public:
             break;
         }
     }
-	int count = 0;
+        int count = 0;
 
     void draw_avatar (Image GameWindow, uint32_t s) override {
-		if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
-			count = 0;
-			draw_image(GameWindow, ghost_cyan_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
-		}
+        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
+        count = 0;
+        draw_image(GameWindow, ghost_cyan_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
+        }
     }
     void update_dependent (V2 new_dep) {
         dependent.x = new_dep.x;
