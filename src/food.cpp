@@ -57,8 +57,7 @@ public:
                 FoodMatrix[y][x] = FoodMatr[y][x];
             }
         }
-        for (int i = 0; i < 4; i++)
-            energizers[i] = true;
+        for (int i = 0; i < 4; i++) energizers[i] = true;
         energizer_mode = false;
         fruits = false;
         bonus = false;
@@ -108,7 +107,7 @@ public:
         energizer_mode = false;
         if (fruits) eaten_fruit(PacMan);
         if (bonus) show_bonus (GameWindow);
-        if(FoodMatrix[PacMan.matr_ceil.y][PacMan.matr_ceil.x]) {
+        if (FoodMatrix[PacMan.matr_ceil.y][PacMan.matr_ceil.x]) {
             FoodMatrix[PacMan.matr_ceil.y][PacMan.matr_ceil.x] = false;
             GAME_SCORE += 10;
             food_counter--;

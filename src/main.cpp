@@ -231,7 +231,6 @@ main (int argc, char **argv)
         }
 
         glClear (GL_COLOR_BUFFER_BIT);
-      
 
         if (Food.food_counter == 0) {
             SDL_Delay(5000);
@@ -256,6 +255,7 @@ main (int argc, char **argv)
             Machibuse.reset_ghost();
             Otoboke.reset_ghost();
             Kimagure.reset_ghost();
+
             if (PacMan.pacman_lives == 0) {
                 frame = 0;
                 PacMan.pacman_lives = 3;
@@ -281,11 +281,7 @@ main (int argc, char **argv)
             Otoboke.awaiting_state   = GHOST_FRIGHTENED;
             Kimagure.awaiting_state  = GHOST_FRIGHTENED;
             PacMan.hellmode++;
-            Oikake.count++;
-            Machibuse.count++;
-            Otoboke.count++;
-            Kimagure.count++;
-            }
+        }
 
         check_pacman_life (PacMan, Oikake, Machibuse, Otoboke, Kimagure);
 
@@ -294,8 +290,6 @@ main (int argc, char **argv)
         Otoboke.action  (GameWindow, frame, PacMan);
         Kimagure.update_dependent(Oikake.matr_ceil);
         Kimagure.action (GameWindow, frame, PacMan);
-
-        
 
         if (PacMan.pacman_lives == 0) {
             draw_image(GameWindow, assets.game_over_image, 280, 310);
@@ -313,7 +307,7 @@ main (int argc, char **argv)
        if (Food.food_counter == 0) {
             draw_image(GameWindow, assets.you_win_image, MAIN_WINDOW_INIT_WIDTH/2, MAIN_WINDOW_INIT_HEIGHT/2);
             play_sound(assets.win_sound);
-          //  draw_image(GameWindow, PacMan.pacman_stay, PacMan.pac_coord.x, PacMan.pac_coord.y);
+            // draw_image(GameWindow, PacMan.pacman_stay, PacMan.pac_coord.x, PacMan.pac_coord.y);
         }
 
         if (frame == 0) {
@@ -323,12 +317,15 @@ main (int argc, char **argv)
 
         ++frame;
 
-        if (Oikake.count == 0&&(Otoboke.count == 0)&&(Machibuse.count == 0)&&(Kimagure.count == 0)) {
-            PacMan.draw(GameWindow, frame);			
+        if (Oikake   .state == GHOST_FRIGHTENED ||
+            Otoboke  .state == GHOST_FRIGHTENED ||
+            Machibuse.state == GHOST_FRIGHTENED ||
+            Kimagure .state == GHOST_FRIGHTENED) {
+            PacMan.helldraw(GameWindow, frame);
         }
         else
         {
-            PacMan.helldraw(GameWindow, frame);
+            PacMan.draw(GameWindow, frame);
         }
 
         update_image_texture (GameWindow);

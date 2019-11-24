@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 enum Pac_States {
     PAC_NONE,
     PAC_STAY,
@@ -40,7 +41,6 @@ public:
     Pac_States awaiting_state;
     uint8_t pacman_lives;
 
-
     pacman() {
         pacman_image = load_image("res/pacman.png");
         hellpacman_image = load_image("res/hellpacman.png");
@@ -48,45 +48,49 @@ public:
         reset_pacman();
         pacman_lives = 3;
     }
+
     void reset_pacman () {
         pac_coord = {280, 190};
         define_matr_ceil();
         state = PAC_WALK_LEFT;
         awaiting_state = PAC_NONE;
     }
+
     void change_state (Pac_States new_state) {
         if (new_state != state) awaiting_state = new_state;
     }
+
     void define_matr_ceil() {
         matr_ceil.x = pac_coord.x/20;
         matr_ceil.y = (MAIN_WINDOW_INIT_HEIGHT - 1 - pac_coord.y)/20;
     }
+
     void action () {
         if (pac_coord.x%20 == 10 && pac_coord.y%20 == 10)
           {
             switch (awaiting_state) {
             case PAC_WALK_LEFT: {
                 if (WalkingMatr[matr_ceil.y][(matr_ceil.x-1)%28] > 0) {
-                  state = awaiting_state;
-                  awaiting_state = PAC_NONE;
+                    state = awaiting_state;
+                    awaiting_state = PAC_NONE;
                 }
             } break;
             case PAC_WALK_RIGHT: {
                 if (WalkingMatr[matr_ceil.y][(matr_ceil.x+1)%28] > 0) {
-                  state = awaiting_state;
-                  awaiting_state = PAC_NONE;
+                    state = awaiting_state;
+                    awaiting_state = PAC_NONE;
                 }
             } break;
             case PAC_WALK_DOWN: {
                 if (WalkingMatr[matr_ceil.y + 1][matr_ceil.x] > 0) {
-                  state = awaiting_state;
-                  awaiting_state = PAC_NONE;
+                    state = awaiting_state;
+                    awaiting_state = PAC_NONE;
                 }
             } break;
             case PAC_WALK_UP: {
                 if (WalkingMatr[matr_ceil.y - 1][matr_ceil.x] > 0) {
-                  state = awaiting_state;
-                  awaiting_state = PAC_NONE;
+                    state = awaiting_state;
+                    awaiting_state = PAC_NONE;
                 }
             } break;
             default:
@@ -124,16 +128,14 @@ public:
 
     void draw (Image GameWindow, uint32_t frame) {
         switch (state) {
-                   case PAC_STAY: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 0 * 32, 0); break;
-                   case PAC_WALK_LEFT: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 1 * 32, (frame % 8 / 4) * 32); break;
-                   case PAC_WALK_RIGHT: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 2 * 32, (frame % 8 / 4) * 32); break;
-                   case PAC_WALK_DOWN: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 3 * 32, (frame % 8 / 4) * 32); break;
-                   case PAC_WALK_UP: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 4 * 32, (frame % 8 / 4) * 32); break;
-                   case PAC_DIES:
-                   case PAC_NONE: break;
-                   }
-		
-		
+        case PAC_STAY: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 0 * 32, 0); break;
+        case PAC_WALK_LEFT: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 1 * 32, (frame % 8 / 4) * 32); break;
+        case PAC_WALK_RIGHT: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 2 * 32, (frame % 8 / 4) * 32); break;
+        case PAC_WALK_DOWN: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 3 * 32, (frame % 8 / 4) * 32); break;
+        case PAC_WALK_UP: draw_image(GameWindow, pacman_image, pac_coord.x, pac_coord.y, 32, 32, 4 * 32, (frame % 8 / 4) * 32); break;
+        case PAC_DIES:
+        case PAC_NONE: break;
+        }
 
         for (int i = 0; i < pacman_lives - 1; ++i) {
             draw_image (GameWindow, pacman_image, 20 + 40 * i, 20, 32, 32, 2*32, 32);
@@ -142,17 +144,17 @@ public:
 
     void helldraw (Image GameWindow, uint32_t frame) {
         switch (state) {
-                   case PAC_STAY:       draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 0 * 32, 0); break;
-                   case PAC_WALK_LEFT:  draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 1 * 32, (frame % 8 / 4) * 32); break;
-                   case PAC_WALK_RIGHT: draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 2 * 32, (frame % 8 / 4) * 32); break;
-                   case PAC_WALK_DOWN:  draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 3 * 32, (frame % 8 / 4) * 32); break;
-                   case PAC_WALK_UP:    draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 4 * 32, (frame % 8 / 4) * 32); break;
-                   case PAC_DIES:
-                   case PAC_NONE: break;
-                   }
+        case PAC_STAY:       draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 0 * 32, 0); break;
+        case PAC_WALK_LEFT:  draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 1 * 32, (frame % 8 / 4) * 32); break;
+        case PAC_WALK_RIGHT: draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 2 * 32, (frame % 8 / 4) * 32); break;
+        case PAC_WALK_DOWN:  draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 3 * 32, (frame % 8 / 4) * 32); break;
+        case PAC_WALK_UP:    draw_image(GameWindow, hellpacman_image, pac_coord.x, pac_coord.y, 32, 32, 4 * 32, (frame % 8 / 4) * 32); break;
+        case PAC_DIES:
+        case PAC_NONE: break;
+        }
 
         for (int i = 0; i < pacman_lives - 1; ++i) {
-        draw_image(GameWindow, pacman_image, 20 + 40 * i, 20, 32, 32, 2 * 32, 32);
+            draw_image(GameWindow, pacman_image, 20 + 40 * i, 20, 32, 32, 2 * 32, 32);
         }
-       }
+    }
 };
