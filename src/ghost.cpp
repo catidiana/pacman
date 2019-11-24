@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 enum Ghost_States {
     GHOST_NONE,
     GHOST_SHY,
@@ -41,7 +42,6 @@ enum Ghost_Direction {
 };
 
 uint8_t dead_bonus_count = 0;
-
 class ghost
 {
 protected:
@@ -67,7 +67,6 @@ public:
     V2 reset_coord;
     V2 matr_ceil;
 
-
     ghost (Ghost_Type type_, V2 target_, V2 res_coord_) : type(type_), walk_target_ceil(target_), reset_coord(res_coord_) {
         reset_ghost();
         ghost_b = load_sound("sound/bonus.wav");
@@ -91,10 +90,10 @@ public:
         define_matr_ceil();
         bonus = false;
         for (int i = 0; i < 4; i++) {
-            walking_time[i] = 8000;
-            if (i > 2) walking_time[i] -= 2000;
-            if (LEVEL < 5) walking_time[i] -=1000*LEVEL;
-            hunting_time[i] = 15000 + LEVEL*5000;
+             walking_time[i] = 100;
+            if (i > 2) walking_time[i] -= 50;
+             if (LEVEL < 5) walking_time[i] -=50*LEVEL;
+             hunting_time[i] = 15000 + LEVEL*5000;
         }
         if (type == OIKAKE_RED) {
             state = GHOST_TRANSFER;
@@ -427,6 +426,8 @@ class ghost_red : public ghost
 {
 private:
     Image ghost_red_mask[4][2];
+
+	
 public:
     ghost_red () : ghost(OIKAKE_RED, {33, 0}, {280, 430}) {
         ghost_red_mask[0][0]  = load_image("res/ghost_red_up_1.png");
@@ -438,9 +439,12 @@ public:
         ghost_red_mask[3][0]  = load_image("res/ghost_red_right_1.png");
         ghost_red_mask[3][1]  = load_image("res/ghost_red_right_2.png");
     }
+        int count = 0;
     void draw_avatar (Image GameWindow, uint32_t s) override {
-        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN)
-            draw_image(GameWindow, ghost_red_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
+        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
+            count = 0;
+            draw_image(GameWindow, ghost_red_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
+        }
     }
 };
 
@@ -448,6 +452,8 @@ class ghost_pink : public ghost
 {
 private:
     Image ghost_pink_mask[4][2];
+
+
 public:
     ghost_pink () : ghost(MACHIBUSE_PINK, {3, 0}, {290, 370}) {
         ghost_pink_mask[0][0]  = load_image("res/ghost_pink_up_1.png");
@@ -460,6 +466,7 @@ public:
         ghost_pink_mask[3][1]  = load_image("res/ghost_pink_right_2.png");
 
     }
+        int count = 0;
     void hunt (pacman PacMan) override {
         switch (PacMan.state) {
         case PAC_WALK_UP: walk_to_target({PacMan.matr_ceil.y - 4, PacMan.matr_ceil.x});
@@ -475,8 +482,10 @@ public:
         }
     }
     void draw_avatar (Image GameWindow, uint32_t s) override {
-        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN)
-            draw_image(GameWindow, ghost_pink_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
+        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
+            count = 0;
+            draw_image(GameWindow, ghost_pink_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
+        }
     }
 };
 
@@ -485,6 +494,8 @@ class ghost_orange : public ghost
 {
 private:
     Image ghost_orange_mask[4][2];
+
+	
 public:
     ghost_orange () : ghost(OTOBOKE_ORANGE, {0, 25}, {330, 370}) {
         ghost_orange_mask[0][0]  = load_image("res/ghost_orange_up_1.png");
@@ -496,13 +507,16 @@ public:
         ghost_orange_mask[3][0]  = load_image("res/ghost_orange_right_1.png");
         ghost_orange_mask[3][1]  = load_image("res/ghost_orange_right_2.png");
     }
+        int count = 0;
     void hunt (pacman PacMan) override {
         if (abs((int)PacMan.matr_ceil.x - (int)matr_ceil.x) > 8 && abs((int)PacMan.matr_ceil.y - (int)matr_ceil.y) > 8) walk_to_target(walk_target_ceil);
         else walk_to_target(PacMan.matr_ceil);
     }
     void draw_avatar (Image GameWindow, uint32_t s) override {
-        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN)
-            draw_image(GameWindow, ghost_orange_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
+        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
+            count = 0;
+            draw_image(GameWindow, ghost_orange_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
+        }
     }
 };
 
@@ -512,6 +526,8 @@ class ghost_cyan : public ghost
 private:
     Image ghost_cyan_mask[4][2];
     V2 dependent;
+
+	
 public:
     ghost_cyan () : ghost(KIMAGURE_CYAN, {33, 25}, {250, 370}) {
         ghost_cyan_mask[0][0]  = load_image("res/ghost_cyan_up_1.png");
@@ -537,9 +553,13 @@ public:
             break;
         }
     }
+        int count = 0;
+
     void draw_avatar (Image GameWindow, uint32_t s) override {
-        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN)
-            draw_image(GameWindow, ghost_cyan_mask[direction][(s%8)/4], gh_coord.x, gh_coord.y);
+        if (state != GHOST_FRIGHTENED && state != GHOST_EATEN) {
+            count = 0;
+            draw_image(GameWindow, ghost_cyan_mask[direction][(s % 8) / 4], gh_coord.x, gh_coord.y);
+        }
     }
     void update_dependent (V2 new_dep) {
         dependent.x = new_dep.x;
